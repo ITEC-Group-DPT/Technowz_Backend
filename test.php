@@ -7,7 +7,7 @@ if (isset($_SERVER["HTTP_ORIGIN"])) {
     );
 
     foreach ($allowedOrigins as $origin) {
-        if (strcmp($origin, $_SERVER["HTTP_ORIGIN"])) {
+        if ($origin == $_SERVER["HTTP_ORIGIN"]) {
             echo "1";
             header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
             echo "2";
