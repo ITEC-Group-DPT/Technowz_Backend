@@ -4,6 +4,8 @@
     include '../classes/Favorite.php';
 
     $header = getallheaders();
+    echo json_encode($header);
+    return;
     if(isset($header['Userid'])){
         $userID = $header['Userid'];
     }
