@@ -1,91 +1,72 @@
 <?php
-class User
-{
-    private $conn;
-    public $userID;
-    private $email;
-    private $username;
-    private $password;
-    public $errors = [];
+    class User{
+        private $conn;
+        public $userID;
+        private $email;
+        private $username;
+        private $password;
+        public $errors = [];
 
-    # constructor
-    public function __construct($conn)
-    {
-        $this->conn = $conn;
-    }
-
-    # helper functions
-    private function getUser($type, $data)
-    {
-        $sql = "SELECT * FROM users WHERE $type = ?";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("s", $data);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows == 1) {
-            return $result->fetch_assoc();
-        } else return false;
-    }
-    # main functions
-    public function checkCreate($email, $username, $password1)
-    {
-        if ($this->getUser("email", $email) != false) {
-            $this->errors["email"] = "Email is already taken";
-            return "Email is already taken";
-        }
-        if (empty($this->errors)) {
-            $this->email = $email;
-            $this->username = $username;
-            $this->password = password_hash($password1, PASSWORD_DEFAULT);
-            return $this->createUser();
-        }
-    }
-
-    private function createUser()
-    {
-        $sql = "INSERT INTO users (email, username, password) VALUES (?,?,?)";
-        $stmt = $this->conn->prepare($sql);
-        $stmt->bind_param("sss", $this->email, $this->username, $this->password);
-        $stmt->execute();
-        if ($stmt->affected_rows == 1) {
-            $this->userID = $stmt->insert_id;
-
-            //add cart to db
-            $sql2 = "INSERT INTO carts (userID) values ($this->userID)";
-            // var_dump($sql2);
-            $stmt2 = $this->conn->prepare($sql2);
-            $stmt2->execute();
-            $arr = [];
-            $arr['userID'] = $this->userID;
-            $arr['email'] = $this->email;
-            $arr['username'] = $this->username;
-            return $arr;
+        public function __construct($conn){
+            $this->conn = $conn;
         }
 
-        return "cannot create";
-    }
+        private function getUser($type, $data){
+            $sql = "SELECT * FROM users WHERE $type = ?";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("s", $data);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows == 1) {
+                return $result->fetch_assoc();
+            } else return false;
+        }
 
-    public function checkSignIn($email, $password)
-    {
-        if ($this->getUser("email", $email) != false) {
-            $row = $this->getUser("email", $email);
-            if (password_verify($password, $row['password'])) {
+        public function checkCreate($email, $username, $password1){
+            if ($this->getUser("email", $email) != false) {
+                $this->errors["email"] = "Email is already taken";
+                return "Email is already taken";
+            }
+            if (empty($this->errors)) {
+                $this->email = $email;
+                $this->username = $username;
+                $this->password = password_hash($password1, PASSWORD_DEFAULT);
+                return $this->createUser();
+            }
+        }
+
+        private function createUser(){
+            $sql = "INSERT INTO users (email, username, password) VALUES (?,?,?)";
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bind_param("sss", $this->email, $this->username, $this->password);
+            $stmt->execute();
+            if ($stmt->affected_rows == 1) {
+                $this->userID = $stmt->insert_id;
+                $sql2 = "INSERT INTO carts (userID) values ($this->userID)";
+                $stmt2 = $this->conn->prepare($sql2);
+                $stmt2->execute();
                 $arr = [];
-                $arr['userID'] = $row['userID'];
-                $arr['email'] = $row['email'];
-                $arr['username'] = $row['username'];
-                // json_encode($arr);
+                $arr['userID'] = $this->userID;
+                $arr['email'] = $this->email;
+                $arr['username'] = $this->username;
                 return $arr;
-            } else return "Password is incorrect";
-        } else return "Email not found";
-    }
+            }
 
-    // private function logIn() {
-    //     $_SESSION['signedIn'] = true;
-    //     $_SESSION['userID'] = $this->userID;
-    //     $_SESSION['email'] = $this->email;
-    //     $_SESSION['username'] = $this->username;
-    //     header("Location: index.php");
-    //     exit();
-    // }
-}
+            return "cannot create";
+        }
+
+        public function checkSignIn($email, $password){
+            if ($this->getUser("email", $email) != false) {
+                $row = $this->getUser("email", $email);
+                if (password_verify($password, $row['password'])) {
+                    $arr = [];
+                    $arr['userID'] = $row['userID'];
+                    $arr['email'] = $row['email'];
+                    $arr['username'] = $row['username'];
+                    // json_encode($arr);
+                    return $arr;
+                } else return "Password is incorrect";
+            } else return "Email not found";
+        }
+    }
+?>
