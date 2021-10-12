@@ -4,7 +4,7 @@
     include '../classes/Favorite.php';
 
     $header = getallheaders();
-    echo json_encode($header);
+    echo "ai cho t luong thien :((((((";
     return;
     if(isset($header['Userid'])){
         $userID = $header['Userid'];
