@@ -3,8 +3,7 @@ if (isset($_SERVER["HTTP_ORIGIN"])) {
     echo json_encode($_SERVER["HTTP_ORIGIN"]);
     $allowedOrigins = array(
         "http://localhost:3000/",
-        "http://192.168.1.155:3000/",
-        // ... etc
+        "http://192.168.1.155:3000/"
     );
 
     if (in_array($_SERVER["HTTP_ORIGIN"], $allowedOrigins)) {
