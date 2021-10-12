@@ -1,7 +1,3 @@
-<?php
-	header('Access-Control-Allow-Origin: *');
-	echo "dao lua";
-?>
 <!doctype html>
 <html lang="en">
 <head>
