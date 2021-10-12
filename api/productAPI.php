@@ -1,6 +1,5 @@
 <?php 
     echo "ai cho t luong thien 2 :((((((";
-    return;
 	include './apiheader.php';
 	include '../classes/Product.php';
     include '../classes/Favorite.php';
