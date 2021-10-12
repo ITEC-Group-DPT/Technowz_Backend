@@ -1,5 +1,5 @@
 <?php
-//header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Origin: *");
 if (isset($_SERVER["HTTP_ORIGIN"])) {
 
     echo "Hello " . (strcmp($_SERVER["HTTP_ORIGIN"],"http://localhost:3000/"));
