@@ -14,8 +14,6 @@
         header("Access-Control-Allow-Headers: origin, content-type, accept, Userid");
     }
 
-    
-
     function errorAPI(){
         http_response_code(600);
 		exit;
