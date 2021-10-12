@@ -1,5 +1,5 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+// header("Access-Control-Allow-Origin: *");
 if (isset($_SERVER["HTTP_ORIGIN"])) {
     $allowedOrigins = array(
         "http://localhost:3000/",
@@ -7,10 +7,10 @@ if (isset($_SERVER["HTTP_ORIGIN"])) {
     );
 
     foreach ($allowedOrigins as $origin) {
-        echo $origin . " ";
-        if (strcmp($origin,$_SERVER["HTTP_ORIGIN"])) {
-            echo "?????";
-            // header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
+        if (strcmp($origin, $_SERVER["HTTP_ORIGIN"])) {
+            echo "1";
+            header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
+            echo "2";
             break;
         }
     }
