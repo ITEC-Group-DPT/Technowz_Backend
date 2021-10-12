@@ -7,10 +7,17 @@ if (isset($_SERVER["HTTP_ORIGIN"])) {
         "http://192.168.1.155:3000/"
     );
 
-    if (in_array($_SERVER["HTTP_ORIGIN"], $allowedOrigins)) {
-        echo "?????";
-        // header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
+    foreach ($allowedOrigins as $origin) {
+        if ($origin == $_SERVER["HTTP_ORIGIN"]) {
+            echo "?????";
+            // header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
+            break;
+        }
     }
+    // if (in_array($_SERVER["HTTP_ORIGIN"], $allowedOrigins)) {
+    //     echo "?????";
+    //     // header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
+    // }
     // header("Access-Control-Allow-Methods: POST, GET, DELETE");
     // header("Access-Control-Allow-Headers: origin, content-type, accept");
 }
