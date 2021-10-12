@@ -1,6 +1,4 @@
 <?php
-	echo "dm cuoc doi";
-	return;
 	include './apiheader.php';
 	include '../classes/Cart.php';
 
