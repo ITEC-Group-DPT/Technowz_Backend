@@ -20,6 +20,7 @@ if (isset($_SERVER["HTTP_ORIGIN"])) {
     // }
     // header("Access-Control-Allow-Methods: POST, GET, DELETE");
     // header("Access-Control-Allow-Headers: origin, content-type, accept");
+    var_dump($_SERVER["HTTP_ORIGIN"]);
 }
 
 // echo "cho Tri";
