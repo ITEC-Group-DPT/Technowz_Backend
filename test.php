@@ -1,11 +1,11 @@
 <?php
-header("Access-Control-Allow-Origin: *");
+// header("Access-Control-Allow-Origin: *");
 if (isset($_SERVER["HTTP_ORIGIN"])) {
 
-    echo "Hello " . (strcmp($_SERVER["HTTP_ORIGIN"],"http://localhost:3000/"));
+    echo "Hello " . (strcmp($_SERVER["HTTP_ORIGIN"],"http://localhost:3000"));
     $allowedOrigins = [
-        "http://localhost:3000/",
-        "http://192.168.1.155:3000/"
+        "http://localhost:3000",
+        "http://192.168.1.155:3000"
     ];
 
     foreach ($allowedOrigins as $origin) {
