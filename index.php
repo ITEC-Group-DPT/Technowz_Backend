@@ -6,6 +6,5 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
 <body>
-    <a href = "/api/cartAPI.php"><h1>cartAPI</h1></a>
 </body>
 </html>
