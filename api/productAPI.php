@@ -1,11 +1,15 @@
 <?php 
-    echo "ai cho t luong thien 2 :((((((";
+    echo "ai cho t luong thien 1 :((((((";
+    return;
 	include './apiheader.php';
+    echo "ai cho t luong thien 2 :((((((";
+    return;
 	include '../classes/Product.php';
     include '../classes/Favorite.php';
-
+    echo "ai cho t luong thien 3 :((((((";
+    return;
     $header = getallheaders();
-    echo "ai cho t luong thien 1 :((((((";
+    echo "ai cho t luong thien 4 :((((((";
     return;
     if(isset($header['Userid'])){
         $userID = $header['Userid'];
