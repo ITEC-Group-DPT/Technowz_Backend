@@ -16,4 +16,4 @@ if (isset($_SERVER["HTTP_ORIGIN"])) {
     
 }
 
-echo json_encode($_GET);
+echo json_encode($_POST);
