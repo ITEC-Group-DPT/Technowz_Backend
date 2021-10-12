@@ -1,14 +1,16 @@
 <?php
  header("Access-Control-Allow-Origin: *");
 if (isset($_SERVER["HTTP_ORIGIN"])) {
-    echo ($_SERVER["HTTP_ORIGIN"]);
+    echo gettype($_SERVER["HTTP_ORIGIN"]);
+
+    echo "Hello " . ($_SERVER["HTTP_ORIGIN"] == "http://localhost:3000/");
     $allowedOrigins = array(
         "http://localhost:3000/",
         "http://192.168.1.155:3000/"
     );
 
     foreach ($allowedOrigins as $origin) {
-        if ($origin == $_SERVER["HTTP_ORIGIN"]) {
+        if ($origin === $_SERVER["HTTP_ORIGIN"]) {
             echo "1";
             header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
             
