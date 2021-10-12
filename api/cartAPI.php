@@ -58,6 +58,4 @@
 	}
 ?>
 
-<?php
-	echo "hehe";
-?>
+<h1>hehe</h1>
