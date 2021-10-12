@@ -1,6 +1,6 @@
 <?php
     echo "APIheader deo cho t luong thien";
-    //include '../database/db.php';
+    include '../database/db.php';
     echo "APIheader deo cho t luong thien 2";
     if (isset($_SERVER["HTTP_ORIGIN"])) {
         $allowedOrigins = [

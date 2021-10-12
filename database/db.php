@@ -3,5 +3,6 @@
     $user = "root";
     $pw = "rYlomtqfi1iUIJ13h9Cx";
     $db = "railway";
-    $conn = new mysqli($host, $user, $pw, $db);
+    $port = "6567";
+    $conn = new mysqli($host, $user, $pw, $db, $port);
 ?>
