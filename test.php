@@ -1,13 +1,13 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 if (isset($_SERVER["HTTP_ORIGIN"])) {
-    echo json_encode($_SERVER["HTTP_ORIGIN"]);
     $allowedOrigins = array(
         "http://localhost:3000/",
         "http://192.168.1.155:3000/"
     );
 
     foreach ($allowedOrigins as $origin) {
+        echo "dmmmmmmm";
         if ($origin == $_SERVER["HTTP_ORIGIN"]) {
             echo "?????";
             // header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
