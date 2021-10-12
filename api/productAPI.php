@@ -1,6 +1,4 @@
 <?php 
-    echo "ai cho t luong thien 1 :((((((";
-    return;
 	include './apiheader.php';
     echo "ai cho t luong thien 2 :((((((";
     return;
