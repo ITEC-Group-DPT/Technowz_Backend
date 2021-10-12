@@ -8,7 +8,7 @@
             header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
         }
         header("Access-Control-Allow-Methods: POST, GET, DELETE");
-        header("Access-Control-Allow-Headers: origin, content-type, accept, userID");
+        header("Access-Control-Allow-Headers: origin, content-type, accept, Userid");
     }
     echo json_encode(getallheaders());
 ?>
