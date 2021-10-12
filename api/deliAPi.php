@@ -3,7 +3,7 @@
     include '../classes/DeliveryInfo.php';
     
     $header = getallheaders();
-    $userID = $header['userID'];
+    $userID = $header['Userid'];
 
     if ($userID == NULL) errorAPI();
     else{

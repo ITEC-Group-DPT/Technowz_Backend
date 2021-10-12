@@ -4,8 +4,8 @@
     include '../classes/Favorite.php';
 
     $header = getallheaders();
-    if(isset($header['userID'])){
-        $userID = $header['userID'];
+    if(isset($header['Userid'])){
+        $userID = $header['Userid'];
     }
     if(isset($_GET['command'])){
         $productID = (isset($_GET['productID'])) ? $_GET['productID'] : '';
