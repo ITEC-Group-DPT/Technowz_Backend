@@ -13,17 +13,15 @@
             $order->createOrder($_POST['name'], $_POST['address'], $_POST['phone'], $userID, $arr, $_POST['total']);
             echo "created";
         }
-        else if($_GET['command'] == 'getorder'){
+        else if($_GET['command'] == 'getOrderDetail'){
             $arr = [];
-            $arr['list'] = $order->getOrder($_GET['orderid']);
-            $arr['datediff'] = $order->getDateDiff($_GET['orderid']);
+            $order->getOrderDetail($_GET['orderID']);
+            $arr['list'] = $order;
+            $arr['datediff'] = $order->getDateDiff($_GET['orderID']);
             echo json_encode($arr);
         }
-        else if($_GET['command'] == 'getdatediff'){
-            echo $order->getDateDiff($_GET['orderid']);
-        }
-        else if($_GET['command'] == 'getuserorders'){
-            echo json_encode($order->getUserOrders($userID));
+        else if($_GET['command'] == 'getOrderList'){
+            echo json_encode($order->getOrderList($userID));
         }
     }
 ?>

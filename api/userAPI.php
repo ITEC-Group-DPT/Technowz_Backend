@@ -3,14 +3,13 @@
     include '../classes/User.php';
     $user = new User($conn);
 
-    if ($_POST['command']=='signup') {
+    if ($_POST['command'] == 'signUp') {
         $email = $_POST['email'];
         $username = $_POST['username'];
         $password1 = $_POST['password'];
         echo json_encode($user->checkCreate($email, $username, $password1));
-    
-
-    }else if ($_POST['command']=='signin') {
+    }
+    else if ($_POST['command'] == 'signIn') {
         $email = $_POST['email'];
         $password = $_POST['password'];
         echo json_encode($user->checkSignIn($email, $password));

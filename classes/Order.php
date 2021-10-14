@@ -14,7 +14,7 @@
             $this->conn = $conn;
         }
 
-        public function getOrder($id){
+        public function getOrderDetail($id){
             $this->id = $id;
             $sql = "SELECT ord.*, ord.name as 'customer', ordz.quantity, p.productID, p.price, p.name, p.rating, p.sold, pimg.img1 
                     from orderdetails ordz, orders ord, products p, productimage pimg 
@@ -53,20 +53,10 @@
             }
         }
 
-        public function getName(){
-            return $this->name;
-        }
-
-        public function getAddress(){
-            return $this->address;
-        }
-
-        public function getPhone(){
-            return $this->phone;
-        }
-
         public function getDateDiff($id){
-            $stmt = $this->conn->prepare("SELECT TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'datediff' from orders where orderID=?");
+            $stmt = $this->conn->prepare("SELECT 
+                                        TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'datediff' 
+                                        from orders where orderID = ?");
             $stmt->bind_param("i", $id);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -87,16 +77,8 @@
             else return "Error display this";
         }
 
-        public function getProducts(){
-            return $this->products;
-        }
-
-        public function getTotalPrice(){
-            return $this->total;
-        }
-
-        public function getUserOrders($userID){
-            $sql = "SELECT ord.orderID,ordz.quantity, p.*,pimg.img1 
+        public function getOrderList($userID){
+            $sql = "SELECT ord.orderID, ordz.quantity, p.*, pimg.img1 
                     FROM orders ord, orderdetails ordz,products p, productimage pimg 
                     WHERE ord.userID = ? and ord.orderID = ordz.orderID and p.productID = pimg.productID and p.productID = ordz.productID 
                     ORDER BY ord.orderID desc";
