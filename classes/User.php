@@ -12,8 +12,7 @@
         }
 
         private function getUser($type, $data){
-            $sql = "SELECT * FROM users WHERE $type = ?";
-            $stmt = $this->conn->prepare($sql);
+            $stmt = $this->conn->prepare("SELECT * FROM users WHERE $type = ?");
             $stmt->bind_param("s", $data);
             $stmt->execute();
             $result = $stmt->get_result();
@@ -50,14 +49,12 @@
         }
         
         private function createUser(){
-            $sql = "INSERT INTO users (email, username, password) VALUES (?,?,?)";
-            $stmt = $this->conn->prepare($sql);
+            $stmt = $this->conn->prepare("INSERT INTO users (email, username, password) VALUES (?,?,?)");
             $stmt->bind_param("sss", $this->email, $this->username, $this->password);
             $stmt->execute();
             if ($stmt->affected_rows == 1) {
                 $this->userID = $stmt->insert_id;
-                $sql2 = "INSERT INTO carts (userID) values ($this->userID)";
-                $stmt2 = $this->conn->prepare($sql2);
+                $stmt2 = $this->conn->prepare("INSERT INTO carts (userID) values ($this->userID)");
                 $stmt2->execute();
                 $arr = [];
                 $arr['userID'] = $this->userID;
