@@ -20,7 +20,7 @@
             echo json_encode($arr);
         }
         else if($_GET['command'] == 'getOrderList'){
-            echo json_encode($order->getOrderList($userID));
+            echo json_encode($order->getOrderList());
         }
     }
 ?>

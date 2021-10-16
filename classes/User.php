@@ -35,7 +35,6 @@
                 if (password_verify($password, $row['password'])) {
                     $arr = [];
                     $arr['userID'] = $row['userID'];
-                    $arr['email'] = $row['email'];
                     $arr['username'] = $row['username'];
                     return $arr;
                 } else return "Password is incorrect";
