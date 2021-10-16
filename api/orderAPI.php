@@ -8,6 +8,7 @@
     if($userID == NULL) errorAPI();
     else{
         $order = new Order($conn, $userID);
+        echo $userID + '\n';
         if($_POST['command'] == 'createOrder'){
             $itemList = json_decode($_POST['itemList']);
             $order->createOrder($_POST['name'], $_POST['address'], $_POST['phone'], $_POST['totalPrice'], $itemList);
@@ -20,8 +21,7 @@
             echo json_encode($arr);
         }
         else if($_GET['command'] == 'getOrderList'){
-            echo $userID;
-            // echo json_encode($order->getOrderList());
+            echo json_encode($order->getOrderList());
         }
     }
 ?>
