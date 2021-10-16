@@ -61,11 +61,8 @@
             $stmt = $this->conn->prepare("SELECT *, TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff' from orders where orderID = ?");
             $stmt->bind_param("i", $orderID);
             $stmt->execute();
-            $result = $stmt->get_result();
-            if($result->num_rows != 0){
-                return $result->fetch_assoc();
-            }
-            else return "no rows";
+            $result = $stmt->get_result()->fetch_assoc();
+            return $result;
         }
     }
 ?>

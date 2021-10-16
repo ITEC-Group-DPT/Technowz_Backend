@@ -10,7 +10,7 @@
         $order = new Order($conn, $userID);
         if(isset($_POST['command'])){
             if($_POST['command'] == 'createOrder'){
-                $itemList = json_decode($_POST['itemList']);
+                $itemList = json_decode($_POST['list']);
                 $order->createOrder($_POST['name'], $_POST['address'], $_POST['phone'], $_POST['totalPrice'], $itemList);
                 echo "created";
             }
