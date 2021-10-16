@@ -6,7 +6,7 @@
     $userID = $header['Userid'];
 
     if ($userID == NULL) errorAPI();
-    else{
+    else{ 
         $deli = new DeliveryInfo($conn, $userID); 
         if ($_GET['command']== 'getDelivery'){
             $array = $deli->getDeliveryInfo();
