@@ -69,21 +69,6 @@ INSERT INTO `carts` (`cartID`, `userID`) VALUES
 (9, 25),
 (10, 26);
 
--- --------------------------------------------------------
-
---
--- Table structure for table `comments`
---
-
-CREATE TABLE `comments` (
-  `commentID` bigint(20) NOT NULL,
-  `userID` bigint(20) NOT NULL,
-  `productID` bigint(20) NOT NULL,
-  `parent` bigint(20) DEFAULT NULL,
-  `content` mediumtext COLLATE utf8mb4_unicode_ci NOT NULL,
-  `rating` int(11) NOT NULL,
-  `dateCreated` datetime NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -93,10 +78,10 @@ CREATE TABLE `comments` (
 
 CREATE TABLE `deliveryinfo` (
   `deliveryID` int(11) NOT NULL,
-  `address` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `userID` bigint(20) NOT NULL,
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `userID` bigint(20) NOT NULL
+  `address` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -191,11 +176,11 @@ INSERT INTO `orderdetails` (`orderID`, `productID`, `quantity`) VALUES
 CREATE TABLE `orders` (
   `orderID` bigint(20) NOT NULL,
   `userID` bigint(20) NOT NULL,
-  `dateCreated` datetime NOT NULL DEFAULT current_timestamp(),
   `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `address` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `phone` varchar(20) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `totalPrice` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL
+  `address` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `totalPrice` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `dateCreated` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
@@ -835,9 +820,9 @@ INSERT INTO `products` (`productID`, `type`, `description`, `spec`, `name`, `pri
 
 CREATE TABLE `users` (
   `userID` bigint(20) NOT NULL,
-  `userRole` int(11) NOT NULL DEFAULT 1,
   `email` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `username` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `userRole` int(11) NOT NULL DEFAULT 1,
   `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `dateCreated` datetime NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -872,13 +857,6 @@ ALTER TABLE `carts`
   ADD PRIMARY KEY (`cartID`),
   ADD KEY `FK_userid_cart` (`userID`);
 
---
--- Indexes for table `comments`
---
-ALTER TABLE `comments`
-  ADD PRIMARY KEY (`commentID`),
-  ADD KEY `FK_userid_comment` (`userID`),
-  ADD KEY `FK_productid_comment` (`productID`);
 
 --
 -- Indexes for table `deliveryinfo`
@@ -936,11 +914,6 @@ ALTER TABLE `users`
 ALTER TABLE `carts`
   MODIFY `cartID` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
---
--- AUTO_INCREMENT for table `comments`
---
-ALTER TABLE `comments`
-  MODIFY `commentID` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `deliveryinfo`
@@ -982,13 +955,6 @@ ALTER TABLE `cartdetails`
 --
 ALTER TABLE `carts`
   ADD CONSTRAINT `FK_userid_cart` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`) ON DELETE CASCADE;
-
---
--- Constraints for table `comments`
---
-ALTER TABLE `comments`
-  ADD CONSTRAINT `FK_productid_comment` FOREIGN KEY (`productID`) REFERENCES `products` (`productID`),
-  ADD CONSTRAINT `FK_userid_comment` FOREIGN KEY (`userID`) REFERENCES `users` (`userID`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `deliveryinfo`
