@@ -7,9 +7,9 @@
 
     if ($userID == NULL) errorAPI();
     else{
-        $deli = new DeliveryInfo($conn); 
-        if ($_GET['command']== 'getdelivery'){
-            $array = $deli->getDeliveryInfo($userID);
+        $deli = new DeliveryInfo($conn, $userID); 
+        if ($_GET['command']== 'getDelivery'){
+            $array = $deli->getDeliveryInfo();
             echo json_encode($array);
         }
         elseif ($_POST['command']== 'update'){
@@ -17,7 +17,7 @@
             echo "updated";
         }
         elseif ($_POST['command']== 'create'){
-            $id = $deli->createDeliveryInfo($_POST['name'], $_POST['address'], $_POST['phone'], $userID);
+            $id = $deli->createDeliveryInfo($_POST['name'], $_POST['address'], $_POST['phone']);
             echo "created";
         }
         elseif ($_POST['command']== 'delete'){

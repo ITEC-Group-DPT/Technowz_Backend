@@ -6,8 +6,8 @@
     if ($_POST['command'] == 'signUp') {
         $email = $_POST['email'];
         $username = $_POST['username'];
-        $password1 = $_POST['password'];
-        echo json_encode($user->checkSignUp($email, $username, $password1));
+        $password = $_POST['password'];
+        echo json_encode($user->checkSignUp($email, $username, $password));
     }
     else if ($_POST['command'] == 'signIn') {
         $email = $_POST['email'];

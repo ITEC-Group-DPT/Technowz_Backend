@@ -1,11 +1,10 @@
 <?php
     class User{
         private $conn;
-        public $userID;
+        private $userID;
         private $email;
         private $username;
         private $password;
-        public $errors = [];
 
         public function __construct($conn){
             $this->conn = $conn;
@@ -16,17 +15,13 @@
             $stmt->bind_param("s", $data);
             $stmt->execute();
             $result = $stmt->get_result();
-            if ($result->num_rows == 1) {
-                return $result->fetch_assoc();
-            } else return false;
+            if ($result->num_rows == 1) return $result->fetch_assoc();
+            else return false;
         }
 
         public function checkSignUp($email, $username, $password1){
-            if ($this->getUser("email", $email) != false) {
-                $this->errors["email"] = "Email is already taken";
-                return "Email is already taken";
-            }
-            if (empty($this->errors)) {
+            if ($this->getUser("email", $email) != false) return "Email is already taken";
+            else {
                 $this->email = $email;
                 $this->username = $username;
                 $this->password = password_hash($password1, PASSWORD_DEFAULT);
@@ -42,7 +37,6 @@
                     $arr['userID'] = $row['userID'];
                     $arr['email'] = $row['email'];
                     $arr['username'] = $row['username'];
-                    // json_encode($arr);
                     return $arr;
                 } else return "Password is incorrect";
             } else return "Email not found";

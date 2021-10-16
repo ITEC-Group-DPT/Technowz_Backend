@@ -10,9 +10,8 @@
       $stmt = $this->conn->prepare("SELECT * from carts WHERE userID = ?");
       $stmt->bind_param("i", $userID);
       $stmt->execute();
-      $result = $stmt->get_result();
-      $row = $result->fetch_assoc();
-      $this->cartID = $row["cartID"];
+      $result = $stmt->get_result()>fetch_assoc();
+      $this->cartID = $result["cartID"];
     }
 
     public function addItemToCart($itemID){
@@ -98,14 +97,14 @@
     }
 
     public function getTotalPrice(){
-      $stmt = $this->conn->prepare("SELECT SUM(p.price*cd.quantity) as 'totalPrice'
+      $stmt = $this->conn->prepare("SELECT SUM(p.price * cd.quantity) as 'totalPrice'
                                     from cartdetails cd, products p
                                     where cd.cartID = ? and cd.productID = p.productID");
       $stmt->bind_param("i", $this->cartID);
       $stmt->execute();
       $result = $stmt->get_result();
       $result = $result->fetch_assoc();
-      return (number_format($result['totalPrice']) . '₫');
+      return ($result['totalPrice']);
     }
   }
 ?>

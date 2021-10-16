@@ -1,16 +1,16 @@
 <?php 
     class DeliveryInfo {
         private $conn;
-        public $userID;
+        private $userID;
 
-        public function __construct($conn){
+        public function __construct($conn, $userID){
             $this->conn = $conn;
+            $this->userID = $userID;
         }
         
-        public function getDeliveryInfo($userID){
-            $this->userID = $userID;
+        public function getDeliveryInfo(){
             $stmt = $this->conn->prepare('SELECT * from deliveryinfo where userID = ?');
-            $stmt->bind_param('i', $userID);
+            $stmt->bind_param('i', $this->userID);
             $stmt->execute();
             $result = $stmt->get_result();
             if ($result->num_rows == 0) return 'No rows';
@@ -27,9 +27,9 @@
             $stmt->execute();
         }
         
-        public function createDeliveryInfo($name, $address, $phone, $userID){
-            $stmt = $this->conn->prepare('INSERT into deliveryinfo (address,name,phone,userid) values (?,?,?,?)');
-            $stmt->bind_param('sssi', $address, $name, $phone, $userID);
+        public function createDeliveryInfo($name, $address, $phone){
+            $stmt = $this->conn->prepare('INSERT into deliveryinfo (address, name, phone, userID) values (?,?,?,?)');
+            $stmt->bind_param('sssi', $address, $name, $phone, $this->userID);
             $stmt->execute();
         }
     
