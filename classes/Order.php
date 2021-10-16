@@ -10,12 +10,12 @@
 
         public function createOrder($name, $address, $phone, $totalPrice, $productList){
             $stmt = $this->conn->prepare('INSERT into orders (userID, name, address, phone, totalPrice) values (?,?,?,?,?)');
-            $stmt->bind_param('sssis', $this->userID, $this->name, $this->address, $this->phone, $this->totalPrice);
+            $stmt->bind_param('sssis', $this->userID, $name, $address, $phone, $totalPrice);
             $stmt->execute();
-            $this->orderID = $this->conn->insert_id;
-            foreach ($this->productList as $product) {
+            $orderID = $this->conn->insert_id;
+            foreach ($productList as $product) {
                 $stmt = $this->conn->prepare('INSERT into orderdetails (orderID, productID, quantity) values (?,?,?)');
-                $stmt->bind_param('sss', $this->orderID, $product[0], $product[1]);
+                $stmt->bind_param('sss', $orderID, $product[0], $product[1]);
                 $stmt->execute();
             }
         }
@@ -59,7 +59,7 @@
 
         public function getOrderInfo($orderID){
             $stmt = $this->conn->prepare("SELECT *, TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff' from orders where orderID = ?");
-            $stmt->bind_param("i", $this->orderID);
+            $stmt->bind_param("i", $orderID);
             $stmt->execute();
             $result = $stmt->get_result();
             if($result->num_rows != 0){
