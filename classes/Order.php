@@ -27,9 +27,10 @@
                                         ORDER BY ord.orderID desc");
             $stmt->bind_param("i", $this->userID);
             $stmt->execute();
-            $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
+            $result = $stmt->get_result();
+            $row = $result->fetch_all(MYSQLI_ASSOC);
             $ords = [];
-            foreach ($result as $item) {
+            foreach ($row as $item) {
                 $orderID = $item['orderID'];
                 $obj = [
                     "productID" => $item['productID'],
@@ -40,7 +41,7 @@
                     "rating" => $item['rating'],
                     "sold" => $item['sold'],
                 ];
-                //if (!isset($ords[$orderID])) $ords[$orderID] = [];
+                if (!isset($ords[$orderID])) $ords[$orderID] = [];
                 array_push($ords[$orderID], $obj);
             }
             return $ords;
