@@ -22,7 +22,7 @@
             } else return false;
         }
 
-        public function checkCreate($email, $username, $password1){
+        public function checkSignUp($email, $username, $password1){
             if ($this->getUser("email", $email) != false) {
                 $this->errors["email"] = "Email is already taken";
                 return "Email is already taken";
@@ -35,6 +35,20 @@
             }
         }
 
+        public function checkSignIn($email, $password){
+            if ($this->getUser("email", $email) != false) {
+                $row = $this->getUser("email", $email);
+                if (password_verify($password, $row['password'])) {
+                    $arr = [];
+                    $arr['userID'] = $row['userID'];
+                    $arr['email'] = $row['email'];
+                    $arr['username'] = $row['username'];
+                    // json_encode($arr);
+                    return $arr;
+                } else return "Password is incorrect";
+            } else return "Email not found";
+        }
+        
         private function createUser(){
             $sql = "INSERT INTO users (email, username, password) VALUES (?,?,?)";
             $stmt = $this->conn->prepare($sql);
@@ -51,22 +65,7 @@
                 $arr['username'] = $this->username;
                 return $arr;
             }
-
             return "cannot create";
-        }
-
-        public function checkSignIn($email, $password){
-            if ($this->getUser("email", $email) != false) {
-                $row = $this->getUser("email", $email);
-                if (password_verify($password, $row['password'])) {
-                    $arr = [];
-                    $arr['userID'] = $row['userID'];
-                    $arr['email'] = $row['email'];
-                    $arr['username'] = $row['username'];
-                    // json_encode($arr);
-                    return $arr;
-                } else return "Password is incorrect";
-            } else return "Email not found";
         }
     }
 ?>

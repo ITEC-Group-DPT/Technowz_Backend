@@ -10,9 +10,7 @@
         }
 
         public function getProduct(){
-            $stmt = $this->conn->prepare("SELECT * 
-                                        from products p, productimage i 
-                                        where p.productID = ? and p.productID = i.productID");
+            $stmt = $this->conn->prepare("SELECT * from products p, productimage i where p.productID = ? and p.productID = i.productID");
             $stmt->bind_param("i", $this->productID);
             $stmt->execute();
             $result = $stmt->get_result();

@@ -44,9 +44,7 @@
     
     public function increaseQuantity($itemID){
       $quantity = $this->getQuantity($itemID) + 1;
-      $stmt = $this->conn->prepare("UPDATE cartdetails
-                                  set quantity = ?
-                                  where cartID = ? and productID = ?");
+      $stmt = $this->conn->prepare("UPDATE cartdetails set quantity = ? where cartID = ? and productID = ?");
       $stmt->bind_param("iii", $quantity, $this->cartID, $itemID);
       $stmt->execute();
       if ($stmt->affected_rows == 1) return true;
@@ -56,9 +54,7 @@
     public function decreaseQuantity($itemID){
       if ($this->getQuantity($itemID) == 1) return false;
       $quantity = $this->getQuantity($itemID) - 1;
-      $stmt = $this->conn->prepare("UPDATE cartdetails
-                                  set quantity = ?
-                                  where cartID = ? and productID = ?");
+      $stmt = $this->conn->prepare("UPDATE cartdetails set quantity = ? where cartID = ? and productID = ?");
       $stmt->bind_param("iii", $quantity, $this->cartID, $itemID);
       $stmt->execute();
       if ($stmt->affected_rows == 1) return true;
@@ -66,9 +62,7 @@
     }
 
     public function getQuantity($itemID){
-      $stmt = $this->conn->prepare("SELECT *
-                                  from cartdetails
-                                  where cartID = ? and productID = ?");
+      $stmt = $this->conn->prepare("SELECT * from cartdetails where cartID = ? and productID = ?");
       $stmt->bind_param("ii", $this->cartID, $itemID);
       $stmt->execute();
       $result = $stmt->get_result();
@@ -77,9 +71,7 @@
     }
 
     public function removeItem($itemID){
-      $stmt = $this->conn->prepare("DELETE
-                                    from cartdetails
-                                    where cartID = ? and productID = ?");
+      $stmt = $this->conn->prepare("DELETE from cartdetails where cartID = ? and productID = ?");
       $stmt->bind_param("ii", $this->cartID, $itemID);
       $stmt->execute();
       if ($stmt->affected_rows != 0) return true;
@@ -87,9 +79,7 @@
     }
 
     public function removeAll(){
-      $stmt = $this->conn->prepare("DELETE
-                                    from cartdetails
-                                    where cartID = ?");
+      $stmt = $this->conn->prepare("DELETE from cartdetails where cartID = ?");
       $stmt->bind_param("i", $this->cartID);
       $stmt->execute();
       if ($stmt->affected_rows != 0) return true;
@@ -97,9 +87,7 @@
     }
 
     public function getTotalQuantity(){
-      $stmt = $this->conn->prepare("SELECT sum(quantity) as 'totalQuantity'
-                                    from cartdetails
-                                    where cartID = ?");
+      $stmt = $this->conn->prepare("SELECT sum(quantity) as 'totalQuantity' from cartdetails where cartID = ?");
       $stmt->bind_param("i", $this->cartID);
       $stmt->execute();
       $result = $stmt->get_result();
