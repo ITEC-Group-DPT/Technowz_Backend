@@ -10,7 +10,7 @@
       $stmt = $this->conn->prepare("SELECT * from carts WHERE userID = ?");
       $stmt->bind_param("i", $userID);
       $stmt->execute();
-      $result = $stmt->get_result()>fetch_assoc();
+      $result = $stmt->get_result()->fetch_assoc();
       $this->cartID = $result["cartID"];
     }
 
