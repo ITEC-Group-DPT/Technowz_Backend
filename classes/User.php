@@ -11,7 +11,7 @@
         }
 
         public function checkSignUp($email, $username, $password){
-            if ($this->getUser("email", $email) == false) return false;
+            if ($this->getUser("email", $email) != false) return false;
             else {
                 $this->email = $email;
                 $this->username = $username;
