@@ -1,5 +1,5 @@
 <?php
-    include '../database/db.php';
+    include './apiheader.php';
     include '../classes/User.php';
     $user = new User($conn);
 
@@ -8,12 +8,16 @@
             $email = $_POST['email'];
             $username = $_POST['username'];
             $password = $_POST['password'];
-            echo json_encode($user->checkSignUp($email, $username, $password));
+            if ($user->checkSignUp($email, $username, $password) != false)
+                echo json_encode($user->checkSignUp($email, $username, $password));
+            else errorAPI();
         }
         else if ($_POST['command'] == 'signIn') {
             $email = $_POST['email'];
             $password = $_POST['password'];
-            echo json_encode($user->checkSignIn($email, $password));
+            if ($user->checkSignIn($email, $password) != false)
+                echo json_encode($user->checkSignIn($email, $password));
+            else errorAPI();
         }
     }
 ?>

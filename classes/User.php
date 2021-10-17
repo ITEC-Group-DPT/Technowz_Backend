@@ -10,21 +10,12 @@
             $this->conn = $conn;
         }
 
-        private function getUser($type, $data){
-            $stmt = $this->conn->prepare("SELECT * FROM users WHERE $type = ?");
-            $stmt->bind_param("s", $data);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            if ($result->num_rows == 1) return $result->fetch_assoc();
-            else return false;
-        }
-
-        public function checkSignUp($email, $username, $password1){
-            if ($this->getUser("email", $email) != false) return "Email is already taken";
+        public function checkSignUp($email, $username, $password){
+            if ($this->getUser("email", $email) != false) return false;
             else {
                 $this->email = $email;
                 $this->username = $username;
-                $this->password = password_hash($password1, PASSWORD_DEFAULT);
+                $this->password = password_hash($password, PASSWORD_DEFAULT);
                 return $this->createUser();
             }
         }
@@ -37,25 +28,38 @@
                     $arr['userID'] = $row['userID'];
                     $arr['username'] = $row['username'];
                     return $arr;
-                } else return "Password is incorrect";
-            } else return "Email not found";
+                } else return false;
+            } else return false;
         }
         
-        private function createUser(){
+        public function createUser(){
             $stmt = $this->conn->prepare("INSERT INTO users (email, username, password) VALUES (?,?,?)");
             $stmt->bind_param("sss", $this->email, $this->username, $this->password);
             $stmt->execute();
             if ($stmt->affected_rows == 1) {
                 $this->userID = $stmt->insert_id;
-                $stmt2 = $this->conn->prepare("INSERT INTO carts (userID) values ($this->userID)");
-                $stmt2->execute();
+                $this->alterCartTable();
                 $arr = [];
                 $arr['userID'] = $this->userID;
                 $arr['email'] = $this->email;
                 $arr['username'] = $this->username;
                 return $arr;
             }
-            return "cannot create";
+        }
+
+        public function getUser($type, $data){
+            $stmt = $this->conn->prepare("SELECT * FROM users WHERE $type = ?");
+            $stmt->bind_param("s", $data);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows == 1) return $result->fetch_assoc();
+            else return false;
+        }
+
+        public function alterCartTable(){
+            $stmt = $this->conn->prepare("INSERT INTO carts (userID) values ?");
+            $stmt->bind_param("i", $this->userID);
+            $stmt->execute();
         }
     }
 ?>
