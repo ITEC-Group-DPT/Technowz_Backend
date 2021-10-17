@@ -11,13 +11,13 @@
         }
 
         public function checkSignUp($email, $username, $password){
-            if ($this->getUser("email", $email) != false) return false;
-            else {
+            if ($this->getUser("email", $email) == false){
                 $this->email = $email;
                 $this->username = $username;
                 $this->password = password_hash($password, PASSWORD_DEFAULT);
                 return $this->createUser();
             }
+            else return false;
         }
 
         public function checkSignIn($email, $password){
