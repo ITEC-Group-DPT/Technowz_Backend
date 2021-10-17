@@ -8,8 +8,8 @@
             $email = $_POST['email'];
             $username = $_POST['username'];
             $password = $_POST['password'];
-            if ($user->checkSignUp($email, $username, $password) != false)
-                echo json_encode($user->checkSignUp($email, $username, $password));
+            if ($user->checkSignUp($email, $username, $password))
+                echo json_encode($user->createUser());
             else errorAPI();
         }
         else if ($_POST['command'] == 'signIn') {

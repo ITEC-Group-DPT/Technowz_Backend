@@ -15,7 +15,7 @@
                 $this->email = $email;
                 $this->username = $username;
                 $this->password = password_hash($password, PASSWORD_DEFAULT);
-                return $this->createUser();
+                return true;
             }
             else return false;
         }
@@ -28,8 +28,10 @@
                     $arr['userID'] = $row['userID'];
                     $arr['username'] = $row['username'];
                     return $arr;
-                } else return false;
-            } else return false;
+                } 
+                else return false;
+            } 
+            else return false;
         }
         
         public function createUser(){
@@ -57,7 +59,7 @@
         }
 
         public function alterCartTable(){
-            $stmt = $this->conn->prepare("INSERT INTO carts (userID) values ?");
+            $stmt = $this->conn->prepare("INSERT INTO carts (userID) values (?)");
             $stmt->bind_param("i", $this->userID);
             $stmt->execute();
         }
