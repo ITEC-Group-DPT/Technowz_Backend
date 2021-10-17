@@ -1,23 +1,31 @@
 <?php
-    include './apiheader.php';
-    include '../classes/User.php';
-    $user = new User($conn);
+include './apiheader.php';
+include '../classes/User.php';
+$user = new User($conn);
 
-    if(isset($_POST['command'])){
-        if ($_POST['command'] == 'signUp') {
-            $email = $_POST['email'];
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-            if ($user->checkSignUp($email, $username, $password))
-                echo json_encode($user->createUser());
-            else errorAPI();
+if (isset($_POST['command'])) {
+    if ($_POST['command'] == 'signUp') {
+        $email = $_POST['email'];
+        $username = $_POST['username'];
+        $password = $_POST['password'];
+        if ($user->checkSignUp($email, $username, $password)) {
+            successApi($user->createUser());
+        } else {
+            failApi("Email is already taken");
         }
-        else if ($_POST['command'] == 'signIn') {
-            $email = $_POST['email'];
-            $password = $_POST['password'];
-            if ($user->checkSignIn($email, $password) != false)
-                echo json_encode($user->checkSignIn($email, $password));
-            else errorAPI();
-        }
-    }
-?>
+    } else if ($_POST['command'] == 'signIn') {
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+
+        $data = $user->checkSignIn($email, $password);
+
+        if ($data != false) {
+            successApi($data);
+            return;
+        } else {
+            failApi("Username or password is incorrect!");
+        };
+    } 
+    else failApi("No command found!");
+}
+else failApi("No command found!");
