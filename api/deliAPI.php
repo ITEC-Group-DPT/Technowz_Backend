@@ -3,30 +3,35 @@
     include '../classes/DeliveryInfo.php';
     
     $header = getallheaders();
-    $userID = $header['Userid'];
-
-    if ($userID == NULL) errorAPI();
-    else{ 
+    if(isset($header['userid'])){
+        $userID = $header['userid'];
         $deli = new DeliveryInfo($conn, $userID);
         if(isset($_POST['command'])){
             if ($_POST['command']== 'update'){
-                $deli->updateDeliveryInfo($_POST['deliID'], $_POST['name'], $_POST['address'], $_POST['phone']);
-                echo "updated";
+                if($deli->updateDeliveryInfo($_POST['deliID'], $_POST['name'], $_POST['address'], $_POST['phone']))
+                    successApi("Updated delivery info");
+                else failApi("Can not update delivery info");
             }
             else if ($_POST['command']== 'create'){
-                $id = $deli->createDeliveryInfo($_POST['name'], $_POST['address'], $_POST['phone']);
-                echo "created";
+                if($id = $deli->createDeliveryInfo($_POST['name'], $_POST['address'], $_POST['phone']))
+                    successApi("Created delivery info");
+                else failApi("Can not create delivery info");
             }
             else if ($_POST['command']== 'delete'){
-                $deli->deleteDelivery($_POST['deliID']);
-                echo "deleted";
+                if($deli->deleteDelivery($_POST['deliID']))
+                    successApi("Deleted delivery info");
+                else failApi("Can not delete delivery info");
             }
-        }
+            else failApi('No command found');
+        } 
         else if(isset($_GET['command'])){
             if($_GET['command']== 'getDelivery'){
-                $array = $deli->getDeliveryInfo();
-                echo json_encode($array);
+                $arr = $deli->getDeliveryInfo();
+                successApi($arr);
             }
+            else failApi('No command found');
         }
-    }
+        else failApi('No command found');
+    } 
+    else failApi('No userID found');
 ?>

@@ -32,5 +32,4 @@
         if (isset($data)) $response['data'] = $data;
         echo json_encode($response);
     }
-
 ?>

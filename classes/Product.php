@@ -14,7 +14,7 @@
             $stmt->bind_param("i", $this->productID);
             $stmt->execute();
             $result = $stmt->get_result();
-            if ($result->num_rows == 1) 
+            if ($result->num_rows == 1)
                 return $result->fetch_assoc();
             else return false;
         }
@@ -42,16 +42,14 @@
         }
 
         public static function getProducts($conn, $value, $limit = 5){
-          $value = "%". $value ."%";
-          $stmt = $conn->prepare("SELECT p.productID, p.name, pimg.img1, p.rating, p.sold, p.price
+            $value = "%". $value ."%";
+            $stmt = $conn->prepare("SELECT p.productID, p.name, pimg.img1, p.rating, p.sold, p.price
                                 from products p, productimage pimg
                                 where p.productID = pimg.productID and p.name like ? limit ?");
-          $stmt->bind_param("si", $value, $limit);
-          $stmt->execute();
-          $results = $stmt->get_result();
-          if ($results->num_rows != 0)
+            $stmt->bind_param("si", $value, $limit);
+            $stmt->execute();
+            $results = $stmt->get_result();
             return $results->fetch_all(MYSQLI_ASSOC);
-          else return false;
         }
     }
 ?>

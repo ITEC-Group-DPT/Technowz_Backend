@@ -8,23 +8,17 @@
             $email = $_POST['email'];
             $username = $_POST['username'];
             $password = $_POST['password'];
-            if ($user->checkSignUp($email, $username, $password)) {
+            if ($user->checkSignUp($email, $username, $password)) 
                 successApi($user->createUser());
-            }
-            else {
-                failApi("Email is already taken");
-            }
-        } else if ($_POST['command'] == 'signIn') {
+            else failApi("Email is already taken");
+        } 
+        else if ($_POST['command'] == 'signIn') {
             $email = $_POST['email'];
             $password = $_POST['password'];
             $data = $user->checkSignIn($email, $password);
-            if ($data != false) {
+            if ($data != false) 
                 successApi($data);
-                return;
-            } 
-            else {
-                failApi("Username or password is incorrect!");
-            }
+            else failApi("Username or password is incorrect!");
         } 
         else failApi("No command found!");
     }

@@ -3,22 +3,25 @@
 	include '../classes/Favorite.php';
 
 	$header = getallheaders();
-	$userID = $header['Userid'];
-
-	if ($userID == NULL) errorAPI();
-	else{
-		$favorite = new Favorite($conn, $userID);
+    if(isset($header['userid'])){
+        $userID = $header['userid'];
+        $favorite = new Favorite($conn, $userID);
         if(isset($_POST['command'])){
             $productID = (isset($_POST['productID'])) ? $_POST['productID'] : '';
              if($_POST['command'] == 'changeFavorite'){
                 $arr['isLike'] = $favorite->changeFavorite($productID);  // like = true, not like = false
-                echo json_encode($arr);
+                successApi($arr);
             }
+            else failApi('No command found');
         }
         else if(isset($_GET['command'])){
             if($_GET['command'] == 'getFavoriteList'){
-                echo json_encode($favorite->getFavoriteList());
+                $data = $favorite->getFavoriteList();
+                successApi($data);
             }
+            else failApi('No command found');
         }
-	}
+        else failApi('No command found');
+    }
+    else failApi('No userID found');
 ?>

@@ -1,31 +1,32 @@
 <?php
     class Order{
         private $conn;
-        private $userID;
 
-        public function __construct($conn, $userID){
+        public function __construct($conn){
             $this->conn = $conn;
-            $this->userID = $userID;
         }
 
-        public function createOrder($name, $address, $phone, $totalPrice, $productList){
+        public function createOrder($userID, $name, $address, $phone, $totalPrice, $productList){
             $stmt = $this->conn->prepare('INSERT into orders (userID, name, address, phone, totalPrice) values (?,?,?,?,?)');
-            $stmt->bind_param('sssis', $this->userID, $name, $address, $phone, $totalPrice);
+            $stmt->bind_param('isssi', $userID, $name, $address, $phone, $totalPrice);
             $stmt->execute();
             $orderID = $this->conn->insert_id;
             foreach ($productList as $product) {
-                $stmt = $this->conn->prepare('INSERT into orderdetails (orderID, productID, quantity) values (?,?,?)');
-                $stmt->bind_param('sss', $orderID, $product[0], $product[1]);
-                $stmt->execute();
+                $stmt1 = $this->conn->prepare('INSERT into orderdetails (orderID, productID, quantity) values (?,?,?)');
+                $stmt1->bind_param('sss', $orderID, $product[0], $product[1]);
+                $stmt1->execute();
             }
+            if($stmt->affected_rows != 0) return true;
+            else return false;
         }
 
-        public function getOrderList(){
+        public function getOrderList($userID){
             $stmt = $this->conn->prepare("SELECT ord.orderID, p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold
                                         FROM orders ord, orderdetails ordz,products p, productimage i 
-                                        WHERE ord.userID = ? and ord.orderID = ordz.orderID and p.productID = i.productID and p.productID = ordz.productID 
+                                        WHERE ord.userID = ? and ord.orderID = ordz.orderID 
+                                                and p.productID = i.productID and p.productID = ordz.productID 
                                         ORDER BY ord.orderID desc");
-            $stmt->bind_param("i", $this->userID);
+            $stmt->bind_param("i", $userID);
             $stmt->execute();
             $result = $stmt->get_result();
             $row = $result->fetch_all(MYSQLI_ASSOC);
@@ -47,22 +48,29 @@
             return $ords;
         }
 
-        public function getItemList($orderID){
+        public function getItemList($orderID, $userID){
             $stmt = $this->conn->prepare("SELECT p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold
-                                        from orderdetails ordz, products p, productimage i
-                                        where ordz.orderID = ? and ordz.productID = p.productID and p.productID = i.productID");
-            $stmt->bind_param("i", $orderID);
+                                        from orders o, orderdetails ordz, products p, productimage i
+                                        where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID 
+                                                and ordz.productID = p.productID and p.productID = i.productID");
+            $stmt->bind_param("ii", $orderID, $userID);
             $stmt->execute();
-            $result = $stmt->get_result()->fetch_all(MYSQLI_ASSOC);
-            return $result;
+            $result = $stmt->get_result();
+            if($result->num_rows != 0)
+                return $result->fetch_all(MYSQLI_ASSOC);
+            else return false;
         }
 
-        public function getOrderInfo($orderID){
-            $stmt = $this->conn->prepare("SELECT *, TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff' from orders where orderID = ?");
-            $stmt->bind_param("i", $orderID);
+        public function getOrderInfo($orderID, $userID){
+            $stmt = $this->conn->prepare("SELECT *, TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff' 
+                                        from orders 
+                                        where orderID = ? and userID = ?");
+            $stmt->bind_param("ii", $orderID, $userID);
             $stmt->execute();
-            $result = $stmt->get_result()->fetch_assoc();
-            return $result;
+            $result = $stmt->get_result();
+            if($result->num_rows != 0)
+                return $result->fetch_assoc();
+            else return false;
         }
     }
 ?>

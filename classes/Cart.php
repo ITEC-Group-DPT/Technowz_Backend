@@ -104,7 +104,9 @@
       $stmt->execute();
       $result = $stmt->get_result();
       $result = $result->fetch_assoc();
-      return ($result['totalPrice']);
+      $total = $result['totalPrice'];
+      if ($total == NULL) $total = 0;
+      return $total;
     }
   }
 ?>

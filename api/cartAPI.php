@@ -3,57 +3,65 @@
 	include '../classes/Cart.php';
 
 	$header = getallheaders();
-	$userID = $header['Userid'];
-
-	if ($userID == NULL) errorAPI();
-	else{
+	if(isset($header['userid'])){
+		$userID = $header['userid'];
 		$cart = new Cart($conn, $userID);
-		$productID = (isset($_POST['productID'])) ? $_POST['productID'] : '';
+	
 		if(isset($_POST['command'])){
+			$productID = (isset($_POST['productID'])) ? $_POST['productID'] : '';
 			if($_POST['command'] == 'add'){
 				if($cart->addItemToCart($productID))
-					echo $cart->getTotalQuantity();
-				else errorAPI();
-			}
+					successApi($cart->getTotalQuantity());
+				else failApi("Can not add product to cart");
+			} 
 			else if($_POST['command'] == 'remove'){
 				if($cart->removeItem($productID))
-					echo $cart->getTotalQuantity();
-				else errorAPI();
-			}
+					successApi($cart->getTotalQuantity());
+				else failApi("Can not remove product from cart");
+			} 
 			else if($_POST['command'] == 'increase'){
 				if($cart->increaseQuantity($productID))
-					echo $cart->getTotalQuantity();
-				else errorAPI();
-			}
+					successApi($cart->getTotalQuantity());
+				else failApi("Can not increase product quantity");
+			} 
 			else if($_POST['command'] == 'decrease'){
 				if($cart->decreaseQuantity($productID))
-					echo $cart->getTotalQuantity();
-				else errorAPI();
-			}
+					successApi($cart->getTotalQuantity());
+				else failApi("Can not decrease product quantity");
+			} 
 			else if($_POST['command'] == 'removeAll'){
 				if($cart->removeAll())
-					echo 'remove all success';
-				else errorAPI();
+					succesApi('remove all success');
+				else failApi("Can not remove all products in cart");
 			}
-		}
+			else failApi('No command found');
+		} 
 		else if(isset($_GET['command'])){
 			$productID = (isset($_GET['productID'])) ? $_GET['productID'] : '';
 			if($_GET['command'] == 'getQuantity'){
-				echo $cart->getQuantity($productID);
-			}
+				$data = $cart->getQuantity($productID);
+				if($data >= 1)
+					successApi($data);
+				else failApi("Can not get product quantity");
+			} 
 			else if($_GET['command'] == 'getCartList'){
 				$arr = [];
 				$arr['cartList'] = $cart->getCartList();
 				$arr['totalPrice'] = $cart->getTotalPrice();
 				$arr['totalQuantity'] = $cart->getTotalQuantity();
-				echo json_encode($arr);
+				successApi($arr);
 			}
 			else if($_GET['command'] == 'getTotalPrice'){
-				echo $cart->getTotalPrice();
+				$data = $cart->getTotalPrice();
+				successApi($data);
 			}
 			else if($_GET['command'] == 'getTotalQuantity'){
-				echo $cart->getTotalQuantity();
+				$data = $cart->getTotalQuantity();
+				successApi($data);
 			}
+			else failApi('No command found');
 		}
+		else failApi('No command found');
 	}
+	else failApi('No userID found');
 ?>

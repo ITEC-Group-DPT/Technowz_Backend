@@ -45,12 +45,12 @@
 
         public function changeFavorite($productID){
             if($this->checkFavorite($productID)) {
-                if($this->removeFavorite($productID)) return false;
-                else return -1;
+                if($this->removeFavorite($productID)) 
+                    return false;
             }
             else{
-                if($this->addToFavorite($productID)) return true;
-                else return -1;
+                if($this->addToFavorite($productID)) 
+                    return true;
             }
         }
     }
