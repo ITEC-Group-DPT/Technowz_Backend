@@ -2,31 +2,52 @@
 	include './apiheader.php';
 	include '../classes/Product.php';
     include '../classes/Favorite.php';
+
     $header = getallheaders();
+    $userID = 0;
     if(isset($header['Userid'])){
         $userID = $header['Userid'];
     }
+
     if(isset($_GET['command'])){
         $productID = (isset($_GET['productID'])) ? $_GET['productID'] : '';
         if($_GET['command'] == 'getProduct'){
             $product = new Product($conn, $productID);
-            $favorite = new Favorite($conn, $userID);
             $arr = [];
             $arr['product'] = $product->getProduct();
-            $arr['favorite'] = (!isset($userID)) ? false : $favorite->checkFavorite($productID);
-            echo json_encode($arr);
+            $arr['favorite'] = false;
+            if($userID != 0){
+                $favorite = new Favorite($conn, $userID);
+                $arr['favorite'] = $favorite->checkFavorite($productID);
+            }
+            if($arr['product'] != ''){
+                successApi($arr);
+            } else failAPI("No product found");
         }
         else if($_GET['command'] == 'getProductCategory'){
             $limit = (isset($_GET['limit'])) ? $_GET['limit'] : 20;
-            echo json_encode(Product::getProductsByCategory($conn, $_GET['typeOfProduct'], $limit));
+            $data = Product::getProductsByCategory($conn, $_GET['typeOfProduct'], $limit);
+            if($data != []){
+                successApi($data);
+            }
+            else failAPI("No product category");
         }
         else if($_GET['command'] == 'getTopRating'){
             $limit = (isset($_GET['limit'])) ? $_GET['limit'] : 20;
-            echo json_encode(Product::getTopRating($conn, $limit));
+            $data = Product::getTopRating($conn, $limit);
+            if($data != []){
+                successApi($data);
+            }
+            else failAPI("No top rating");
         }
         else if($_GET['command'] == 'searchProducts'){
             $limit = (isset($_GET['limit'])) ? $_GET['limit'] : 5;
-            echo json_encode(Product::getProducts($conn, $_GET['searchValue'], $limit));
+            $data = Product::getProducts($conn, $_GET['searchValue'], $limit);
+            if($data != []){
+                successApi($data);
+            }
+            else failAPI("No product found");
         }
 	}
+    else echo failApi("No command found!");
 ?>
