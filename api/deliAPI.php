@@ -13,8 +13,9 @@
                 else failApi("Can not update delivery info");
             }
             else if ($_POST['command']== 'create'){
-                if($id = $deli->createDeliveryInfo($_POST['name'], $_POST['address'], $_POST['phone']))
-                    successApi("Created delivery info");
+                $id = $deli->createDeliveryInfo($_POST['name'], $_POST['address'], $_POST['phone']);
+                if($id != false)
+                    successApi($id);
                 else failApi("Can not create delivery info");
             }
             else if ($_POST['command']== 'delete'){
