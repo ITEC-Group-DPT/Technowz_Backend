@@ -1,4 +1,4 @@
-<?php 
+<?php
 	include './apiheader.php';
 	include '../classes/Product.php';
     include '../classes/Favorite.php';
@@ -7,6 +7,7 @@
         $productID = (isset($_GET['productID'])) ? $_GET['productID'] : '';
         if($_GET['command'] == 'getProduct'){
             $header = getallheaders();
+            successApi($header);
             $product = new Product($conn, $productID);
             $arr = [];
             $arr['product'] = $product->getProduct();
@@ -14,7 +15,7 @@
             if(isset($header['userid'])){
                 $favorite = new Favorite($conn, $header['userid']);
                 $arr['favorite'] = $favorite->checkFavorite($productID);
-            } 
+            }
             else $arr['favorite'] = false;
 
             if($arr['product'] != [])
