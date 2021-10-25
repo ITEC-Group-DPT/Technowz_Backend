@@ -1,4 +1,4 @@
-<?php 
+<?php
 	include './apiheader.php';
 	include '../classes/Product.php';
     include '../classes/Favorite.php';
@@ -11,10 +11,10 @@
             $arr = [];
             $arr['product'] = $product->getProduct();
 
-            if(isset($header['userid'])){
-                $favorite = new Favorite($conn, $header['userid']);
+            if(isset($header['Userid'])){
+                $favorite = new Favorite($conn, $header['Userid']);
                 $arr['favorite'] = $favorite->checkFavorite($productID);
-            } 
+            }
             else $arr['favorite'] = false;
 
             if($arr['product'] != [])
