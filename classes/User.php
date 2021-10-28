@@ -32,9 +32,9 @@
                     $res['isSuccess'] = true;
                     $res['data'] = $arr;
                 }
-                else $res['data']['errorPassword'] = "Password is incorrect";
+                else $res['data'] = "Password is incorrect";
             }
-            else $res['data']['errorEmail'] = "Email is invalid";
+            else $res['data'] = "Email is invalid";
             return $res;
         }
 
