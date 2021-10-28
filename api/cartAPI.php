@@ -10,13 +10,19 @@
 		if(isset($_POST['command'])){
 			$productID = (isset($_POST['productID'])) ? $_POST['productID'] : '';
 			if($_POST['command'] == 'add'){
-				if($cart->addItemToCart($productID))
-					successApi($cart->getTotalQuantity());
+				if($cart->addItemToCart($productID)) {
+					$arr = [];
+					$arr['totalQuantity'] = $cart->getTotalQuantity();
+					successApi($arr, "Add product to cart successfully");
+				}
 				else failApi("Can not add product to cart");
 			}
 			else if($_POST['command'] == 'remove'){
-				if($cart->removeItem($productID))
-					successApi($cart->getTotalQuantity());
+				if($cart->removeItem($productID)) {
+					$arr = [];
+					$arr['totalQuantity'] = $cart->getTotalQuantity();
+					successApi($arr);
+				}
 				else failApi("Can not remove product from cart");
 			}
 			else if($_POST['command'] == 'increase'){
