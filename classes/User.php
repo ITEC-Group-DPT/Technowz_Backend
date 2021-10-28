@@ -21,19 +21,23 @@
         }
 
         public function checkSignIn($email, $password){
+            $res = [];
+            $res['isSuccess'] = false;
             if ($this->getUser("email", $email) != false) {
                 $row = $this->getUser("email", $email);
                 if (password_verify($password, $row['password'])) {
                     $arr = [];
                     $arr['userID'] = $row['userID'];
                     $arr['username'] = $row['username'];
-                    return $arr;
-                } 
-                else return false;
-            } 
-            else return false;
+                    $res['isSuccess'] = true;
+                    $res['data'] = $arr;
+                }
+                else $res['data'] = "Password is incorrect";
+            }
+            else $res['data'] = "Email is invalid";
+            return $res;
         }
-        
+
         public function createUser(){
             $stmt = $this->conn->prepare("INSERT INTO users (email, username, password) VALUES (?,?,?)");
             $stmt->bind_param("sss", $this->email, $this->username, $this->password);
@@ -64,4 +68,3 @@
             $stmt->execute();
         }
     }
-?>
