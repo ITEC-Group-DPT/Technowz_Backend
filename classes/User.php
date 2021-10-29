@@ -34,7 +34,7 @@
                 }
                 else $res['data']['errorPassword'] = "Password is incorrect";
             }
-            else $res['data']['errorEmail'] = "Email is invalid";
+            else $res['data']['errorEmail'] = "Email does not exist";
             return $res;
         }
 
