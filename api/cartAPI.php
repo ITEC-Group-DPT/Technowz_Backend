@@ -21,7 +21,7 @@
 				if($cart->removeItem($productID)) {
 					$arr = [];
 					$arr['totalQuantity'] = $cart->getTotalQuantity();
-					successApi($arr);
+					successApi($arr,"Remove item from cart");
 				}
 				else failApi("Can not remove product from cart");
 			}
