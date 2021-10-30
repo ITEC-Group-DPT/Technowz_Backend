@@ -11,17 +11,13 @@
 			$productID = (isset($_POST['productID'])) ? $_POST['productID'] : '';
 			if($_POST['command'] == 'add'){
 				if($cart->addItemToCart($productID)) {
-					$arr = [];
-					$arr['totalQuantity'] = $cart->getTotalQuantity();
-					successApi($arr, "Add product to cart successfully");
+					successApi("Add product to cart successfully");
 				}
 				else failApi("Can not add product to cart");
 			}
 			else if($_POST['command'] == 'remove'){
 				if($cart->removeItem($productID)) {
-					$arr = [];
-					$arr['totalQuantity'] = $cart->getTotalQuantity();
-					successApi($arr,"Remove item from cart");
+					successApi("Remove item from cart successfully");
 				}
 				else failApi("Can not remove product from cart");
 			}
