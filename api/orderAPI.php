@@ -10,7 +10,7 @@
             if($_POST['command'] == 'createOrder'){
                 $itemList = json_decode($_POST['list']);
                 if($order->createOrder($userID, $_POST['name'], $_POST['address'], $_POST['phone'], $_POST['totalPrice'], $itemList))
-                    succesApi('Order created');
+                    successApi('Order created');
                 else failApi('Can not create order');
             }
             else failApi('No command found');
