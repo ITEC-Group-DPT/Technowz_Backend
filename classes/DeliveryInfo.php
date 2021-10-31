@@ -32,7 +32,7 @@
             $stmt = $this->conn->prepare('INSERT into deliveryinfo (address, name, phone, userID) values (?,?,?,?)');
             $stmt->bind_param('sssi', $address, $name, $phone, $this->userID);
             $stmt->execute();
-            if($stmt->affected_rows != 0) return true;
+            if($stmt->affected_rows != 0) return $stmt->insert_id;
             else return false;
         }
     
