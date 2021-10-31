@@ -47,7 +47,6 @@
                 $this->alterCartTable();
                 $arr = [];
                 $arr['userID'] = $this->userID;
-                $arr['email'] = $this->email;
                 $arr['username'] = $this->username;
                 return $arr;
             }
