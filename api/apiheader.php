@@ -26,9 +26,11 @@
         echo json_encode($response);
     }
 
-    function successApi($data){
+    function successApi($data,$message = ""){
         $response = [];
         $response['success'] = true;
+        if(!empty($message)) $data['message'] = $message;
+
         if (isset($data)) $response['data'] = $data;
         echo json_encode($response);
     }
