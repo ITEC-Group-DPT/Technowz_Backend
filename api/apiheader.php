@@ -5,7 +5,7 @@
             "http://localhost:3000",
             "http://192.168.1.155:3000",
             "http://localhost:8080",
-            "https://technow-b54b6.web.app/",
+            "https://technow-b54b6.web.app",
         ];
 
         if (in_array($_SERVER["HTTP_ORIGIN"], $allowedOrigins)) {
