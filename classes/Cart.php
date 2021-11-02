@@ -32,7 +32,7 @@
 
     public function getCartList(){
       $stmt = $this->conn->prepare
-        ("SELECT p.productID, p.name, pri.img1, p.sold, cd.quantity, p.price
+        ("SELECT p.productID, p.rating, p.name, pri.img1, p.sold, cd.quantity, p.price
         from cartdetails cd, carts c, products p, productimage pri
         where cd.cartID = c.cartID and c.userID = ? and cd.productID = p.productID and p.productID = pri.productID");
       $stmt->bind_param("i", $this->userID);
@@ -109,4 +109,3 @@
       return $total;
     }
   }
-?>
