@@ -10,6 +10,7 @@
 
     if(isset($_GET['command'])){
         $productID = (isset($_GET['productID'])) ? $_GET['productID'] : '';
+        echo $header;
         if($_GET['command'] == 'getProduct'){
             $product = new Product($conn, $productID);
             $arr = [];
