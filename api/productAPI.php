@@ -4,13 +4,13 @@
     include '../classes/Favorite.php';
 
     $header = getallheaders();
+    echo $header;
     if(isset($header['Userid'])){
         $userID = $header['Userid'];
     }
 
     if(isset($_GET['command'])){
         $productID = (isset($_GET['productID'])) ? $_GET['productID'] : '';
-        echo $header;
         if($_GET['command'] == 'getProduct'){
             $product = new Product($conn, $productID);
             $arr = [];
