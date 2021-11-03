@@ -29,6 +29,7 @@
                     $arr = [];
                     $arr['userID'] = $row['userID'];
                     $arr['username'] = $row['username'];
+                    $arr['userRole'] = $row['userRole'];
                     $res['isSuccess'] = true;
                     $res['data'] = $arr;
                 }

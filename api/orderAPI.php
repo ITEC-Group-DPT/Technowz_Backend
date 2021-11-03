@@ -37,7 +37,9 @@ if (isset($header['Userid']))
         }
         else if ($_GET['command'] == 'getOrderList')
         {
-            $data = $order->getOrderList($userID);
+            $offset = isset($_POST['offset']) ? $_POST['offset'] : 0;
+            $limit = isset($_POST['limit']) ? $_POST['limit'] : 5;
+            $data = $order->getOrderList($userID,$offset,$limit);
             successApi($data);
         }
         else failApi('No command found');
