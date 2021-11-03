@@ -20,13 +20,13 @@
             else return false;
         }
 
-        public function getOrderList($userID){
+        public function getOrderList($userID,$offset=0,$limit=5){
             $stmt = $this->conn->prepare("SELECT ord.orderID, p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold
                                         FROM orders ord, orderdetails ordz,products p, productimage i 
                                         WHERE ord.userID = ? and ord.orderID = ordz.orderID 
                                                 and p.productID = i.productID and p.productID = ordz.productID 
-                                        ORDER BY ord.orderID desc");
-            $stmt->bind_param("i", $userID);
+                                        ORDER BY ord.orderID desc limit ?,?");
+            $stmt->bind_param("iii", $userID,$offset,$limit);
             $stmt->execute();
             $result = $stmt->get_result();
             $row = $result->fetch_all(MYSQLI_ASSOC);
