@@ -17,14 +17,11 @@ if (isset($header['Userid'])) {
 			if ($cart->removeItem($productID)) {
 				successApi("Remove item from cart successfully");
 			} else failApi("Can not remove product from cart");
-		} else if ($_POST['command'] == 'increase') {
-			if ($cart->increaseQuantity($productID))
-				successApi("Increase quantity successfully");
-			else failApi("Can not increase product quantity");
-		} else if ($_POST['command'] == 'decrease') {
-			if ($cart->decreaseQuantity($productID))
-				successApi("Decrease quantity successfully");
-			else failApi("Can not decrease product quantity");
+		} else if ($_POST['command'] == 'changeQuantity') {
+			$changeQuantity = intval($_POST['quantity']);
+			if ($cart->changeQuantity($productID,$changeQuantity))
+				successApi("Change quantity successfully");
+			else failApi("Can not change product quantity");
 		} else if ($_POST['command'] == 'removeAll') {
 			if ($cart->removeAll())
 				successApi('remove all success');
