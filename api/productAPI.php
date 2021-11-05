@@ -73,11 +73,6 @@
                 successApi("A product is removed");
             else failApi("No product is removed");
         }
-        else if($_POST['command'] == 'updateRating'){
-            if($product->updateProductRating($_POST['rating']))
-                successApi("Update product rating successfully");
-            else failApi("Can not update product rating");
-        }
         else failApi('No command found');
     }
     else failApi("No command found!");
