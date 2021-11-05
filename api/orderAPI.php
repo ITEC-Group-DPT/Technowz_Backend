@@ -15,7 +15,6 @@ if (isset($header['Userid']))
             $itemList = json_decode($_POST['list']);
             if ($order->createOrder($userID, $_POST['name'], $_POST['address'], $_POST['phone'], $_POST['totalPrice'], $itemList))
             {
-                (new Cart($conn, $userID))->removeall();
                 if ($_POST['deliID'] == -1) (new DeliveryInfo($conn, $userID))->createDeliveryInfo($_POST['name'], $_POST['address'], $_POST['phone']);
                 else (new DeliveryInfo($conn, $userID))->updateDeliveryInfo($_POST['deliID'], $_POST['name'], $_POST['address'], $_POST['phone']);
                 successApi('Order created');

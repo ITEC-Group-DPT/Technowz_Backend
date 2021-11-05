@@ -27,7 +27,7 @@
         if ($stmt2->affected_rows == 1) return true;
         else return false;
       }
-      else return $this->increaseQuantity($itemID);
+      else return $this->changeQuantity($itemID,1);
     }
 
     public function getCartList(){
@@ -41,18 +41,8 @@
       return $result->fetch_all(MYSQLI_ASSOC);
     }
     
-    public function increaseQuantity($itemID){
-      $quantity = $this->getQuantity($itemID) + 1;
-      $stmt = $this->conn->prepare("UPDATE cartdetails set quantity = ? where cartID = ? and productID = ?");
-      $stmt->bind_param("iii", $quantity, $this->cartID, $itemID);
-      $stmt->execute();
-      if ($stmt->affected_rows == 1) return true;
-      else return false;
-    }
-
-    public function decreaseQuantity($itemID){
-      if ($this->getQuantity($itemID) == 1) return false;
-      $quantity = $this->getQuantity($itemID) - 1;
+    public function changeQuantity($itemID,$quantity){
+      $quantity = $this->getQuantity($itemID) + $quantity;
       $stmt = $this->conn->prepare("UPDATE cartdetails set quantity = ? where cartID = ? and productID = ?");
       $stmt->bind_param("iii", $quantity, $this->cartID, $itemID);
       $stmt->execute();
