@@ -4,7 +4,8 @@
         $allowedOrigins = [
             "http://localhost:3000",
             "http://192.168.1.155:3000",
-            "http://localhost:8080"
+            "http://localhost:8080",
+            "https://technow-b54b6.web.app",
         ];
 
         if (in_array($_SERVER["HTTP_ORIGIN"], $allowedOrigins)) {
@@ -26,9 +27,11 @@
         echo json_encode($response);
     }
 
-    function successApi($data){
+    function successApi($data,$message = ""){
         $response = [];
         $response['success'] = true;
+        if(!empty($message)) $data['message'] = $message;
+
         if (isset($data)) $response['data'] = $data;
         echo json_encode($response);
     }
