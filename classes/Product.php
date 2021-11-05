@@ -10,81 +10,12 @@
         }
 
         public function getProduct(){
-            $stmt = $this->conn->prepare("SELECT * 
-                                        from products p, productimage i 
-                                        where p.productID = ? and p.productID = i.productID");
+            $stmt = $this->conn->prepare("SELECT * from products p, productimage i where p.productID = ? and p.productID = i.productID");
             $stmt->bind_param("i", $this->productID);
             $stmt->execute();
             $result = $stmt->get_result();
             if ($result->num_rows == 1)
                 return $result->fetch_assoc();
-            else return false;
-        }
-
-        public function updateProductRating($rating){
-            $stmt1 = $this->conn->prepare("SELECT * 
-                        from products p
-                        where p.productID = ?");
-            $stmt1->bind_param("i", $this->productID);
-            $stmt1->execute();
-            $result = $stmt1->get_result()->fetch_assoc();
-            $oldRating = $result['rating'];
-            $numRate = $result['numRate'];
-            $newRating = (($oldRating * $numRate) + $rating) / ($numRate + 1);
-            $stmt2 = $this->conn->prepare("UPDATE products
-                                        Set rating = ?, numRate = ?
-                                        where productID = ?");
-            $numRate += 1;
-            $stmt2->bind_param("dii", $newRating, $numRate, $this->productID);
-            $stmt2->execute();
-            if($stmt2->affected_rows == 1) return true;
-            else return false;
-        }
-
-        public function createProduct($data){
-            $stmt1 = $this->conn->prepare("INSERT INTO products 
-                                        (type, description, spec, name, price, rating, sold) 
-                                        VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt1->bind_param("ssssidi", $data['type'], $data['description'], $data['spec'], 
-                                $data['name'], $data['price'], $data['rating'], $data['sold']);
-            $stmt1->execute();
-            $this->productID = $stmt1->insert_id;
-
-            $stmt2 = $this->conn->prepare("INSERT INTO productimage 
-                                        (productID, img1, img2, img3, img4) 
-                                        VALUES (?, ?, ?, ?, ?)");
-            $stmt2->bind_param("issss", $this->productID, $data['img1'],
-                                $data['img2'], $data['img3'], $data['img4']);
-            $stmt2->execute();
-            if ($stmt1->affected_rows == 1 && $stmt2->affected_rows == 1) return $stmt1->insert_id;
-            else return false;
-        }
-
-        public function modifyProduct($data){
-            $stmt1 = $this->conn->prepare("UPDATE products 
-                                        SET type = ?, description = ?, spec = ?, name = ?, 
-                                            price = ?, rating = ?, sold = ? 
-                                        WHERE productID = ?");
-            $stmt1->bind_param("ssssidii", $data['type'], $data['description'], $data['spec'], 
-                                $data['name'], $data['price'], $data['rating'], $data['sold'], $this->productID);
-            $stmt1->execute();
-
-            $stmt2 = $this->conn->prepare("UPDATE productimage SET img1 = ?, img2 = ?, img3 = ?, img4 = ? WHERE productID = ?");
-            $stmt2->bind_param("ssssi", $data['img1'], $data['img2'], $data['img3'], $data['img4'], $this->productID);
-            $stmt2->execute();
-            if ($stmt1->affected_rows > 0 || $stmt2->affected_rows > 0) return true;
-            else return false;
-        }
-
-        public function removeProduct(){
-            $stmt1 = $this->conn->prepare("DELETE FROM products WHERE productID like ?");
-            $stmt1->bind_param("i", $this->productID);
-            $stmt1->execute();
-
-            $stmt2 = $this->conn->prepare("DELETE FROM productimage WHERE productID like ?");
-            $stmt2->bind_param("i", $this->productID);
-            $stmt2->execute();
-            if ($stmt1->affected_rows != 0) return true;
             else return false;
         }
 
@@ -119,6 +50,44 @@
             $stmt->execute();
             $results = $stmt->get_result();
             return $results->fetch_all(MYSQLI_ASSOC);
+        }
+
+        public function createProduct($data){
+            $stmt1 = $this->conn->prepare("INSERT INTO products (type, description, spec, name, price, rating, sold) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt1->bind_param("ssssidi", $data['type'], $data['description'], $data['spec'], $data['name'], $data['price'], $data['rating'], $data['sold']);
+            $stmt1->execute();
+            $this->productID = $stmt1->insert_id;
+
+            $stmt2 = $this->conn->prepare("INSERT INTO productimage (productID, img1, img2, img3, img4) VALUES (?, ?, ?, ?, ?)");
+            $stmt2->bind_param("issss", $this->productID, $data['img1'], $data['img2'], $data['img3'], $data['img4']);
+            $stmt2->execute();
+            if ($stmt1->affected_rows == 1 && $stmt2->affected_rows == 1) return $stmt1->insert_id;
+            // if ($stmt1->affected_rows == 1) return $stmt1->insert_id;
+            else return false;
+        }
+
+        public function modifyProduct($data){
+            $stmt1 = $this->conn->prepare("UPDATE products SET type = ?, description = ?, spec = ?, name = ?, price = ?, rating = ?, sold = ? WHERE productID = ?");
+            $stmt1->bind_param("ssssidii", $data['type'], $data['description'], $data['spec'], $data['name'], $data['price'], $data['rating'], $data['sold'], $this->productID);
+            $stmt1->execute();
+
+            $stmt2 = $this->conn->prepare("UPDATE productimage SET img1 = ?, img2 = ?, img3 = ?, img4 = ? WHERE productID = ?");
+            $stmt2->bind_param("ssssi", $data['img1'], $data['img2'], $data['img3'], $data['img4'], $this->productID);
+            $stmt2->execute();
+            if ($stmt1->affected_rows > 0 || $stmt2->affected_rows > 0) return true;
+            else return false;
+        }
+
+        public function removeProduct(){
+            $stmt1 = $this->conn->prepare("DELETE FROM products WHERE productID like ?");
+            $stmt1->bind_param("i", $this->productID);
+            $stmt1->execute();
+
+            $stmt2 = $this->conn->prepare("DELETE FROM productimage WHERE productID like ?");
+            $stmt2->bind_param("i", $this->productID);
+            $stmt2->execute();
+            if ($stmt1->affected_rows != 0) return true;
+            else return false;
         }
     }
 ?>
