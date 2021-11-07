@@ -15,8 +15,27 @@
                 $stmt1 = $this->conn->prepare('INSERT into orderdetails (orderID, productID, quantity) values (?,?,?)');
                 $stmt1->bind_param('sss', $orderID, $product[0], $product[1]);
                 $stmt1->execute();
+                $this->updateSoldProduct($product[0], $product[1]);
             }
             if ($stmt->affected_rows != 0) return true;
+            else return false;
+        }
+
+        public function updateSoldProduct($productID, $soldQuantity){
+            $stmt = $this->conn->prepare('SELECT sold
+                                        from products
+                                        where productID = ?');
+            
+            $stmt->bind_param("i", $productID);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+            $newSold = $result['sold'] + $soldQuantity;
+            $stmt1 = $this->conn->prepare('UPDATE products
+                                        set sold = ?
+                                        where productID = ?');
+            $stmt1->bind_param('ii', $newSold, $productID);
+            $stmt1->execute();
+            if($stmt1->affected_rows == 1) return true;
             else return false;
         }
 
