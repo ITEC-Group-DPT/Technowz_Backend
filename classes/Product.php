@@ -94,7 +94,7 @@
         public static function getProductsByCategory($conn, $type, $limit = 10, $offset = 0){
             $stmt = $conn->prepare("SELECT p.productID, p.name, pimg.img1, p.rating, p.sold, p.price
                                     from products p, productimage pimg
-                                    where p.type = ? and p.productID = pimg.productID limit ?,?");
+                                    where p.type = ? and p.productID = pimg.productID limit ?, ?");
             $stmt->bind_param("sii", $type, $offset, $limit);
             $stmt->execute();
             $results = $stmt->get_result();

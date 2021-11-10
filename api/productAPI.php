@@ -26,8 +26,9 @@
             else failAPI("No product found");
         }
         else if($_GET['command'] == 'getProductCategory'){
+            $offset = (isset($_GET['offset'])) ? $_GET['offset'] : 20;
             $limit = (isset($_GET['limit'])) ? $_GET['limit'] : 20;
-            $data = Product::getProductsByCategory($conn, $_GET['typeOfProduct'], $limit);
+            $data = Product::getProductsByCategory($conn, $_GET['typeOfProduct'], $offset, $limit);
             successApi($data);
         }
         else if($_GET['command'] == 'getTopRating'){
