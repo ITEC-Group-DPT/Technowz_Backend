@@ -75,7 +75,7 @@
         }
 
         public function getItemList($orderID, $userID){
-            $stmt = $this->conn->prepare("SELECT p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold
+            $stmt = $this->conn->prepare("SELECT p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold, ordz.rating as 'customerRating'
                                             from orders o, orderdetails ordz, products p, productimage i
                                             where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID 
                                                     and ordz.productID = p.productID and p.productID = i.productID");
