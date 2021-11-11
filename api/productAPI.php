@@ -56,8 +56,8 @@
         $data['sold'] = isset($_POST['sold']) ? $_POST['sold'] : "";
         $data['img1'] = isset($_POST['img1']) ? $_POST['img1'] : "";
         $data['img2'] = isset($_POST['img2']) ? $_POST['img2'] : "";
-        $data['img3'] = isset($_POST['img3']) ? $_POST['img2'] : "";
-        $data['img4'] = isset($_POST['img4']) ? $_POST['img2'] : "";
+        $data['img3'] = isset($_POST['img3']) ? $_POST['img3'] : "";
+        $data['img4'] = isset($_POST['img4']) ? $_POST['img4'] : "";
         
         if($_POST['command'] == 'create'){
             if($product->createProduct($data))
