@@ -26,9 +26,7 @@
             else failAPI("No product found");
         }
         else if($_GET['command'] == 'getProductCategory'){
-            $offset = (isset($_GET['offset'])) ? $_GET['offset'] : 20;
-            $limit = (isset($_GET['limit'])) ? $_GET['limit'] : 20;
-            $data = Product::getProductsByCategory($conn, $_GET['typeOfProduct'], $offset, $limit);
+            $data = Product::getProductsByCategory($conn, $_GET['typeOfProduct'], $_GET['orderBy'], $_GET['option'], $_GET['offset'], $_GET['limit']);
             successApi($data);
         }
         else if($_GET['command'] == 'getTopRating'){
@@ -58,17 +56,17 @@
         $data['img2'] = isset($_POST['img2']) ? $_POST['img2'] : "";
         $data['img3'] = isset($_POST['img3']) ? $_POST['img3'] : "";
         $data['img4'] = isset($_POST['img4']) ? $_POST['img4'] : "";
-        
+
         if($_POST['command'] == 'create'){
             if($product->createProduct($data))
                 successApi("New product created");
             else failApi("No product created");
-        } 
+        }
         else if($_POST['command'] == 'modify'){
             if($product->modifyProduct($data))
                 successApi("A product is modified");
             else failApi("No product is modified");
-        } 
+        }
         else if($_POST['command'] == 'remove'){
             if($product->removeProduct())
                 successApi("A product is removed");
