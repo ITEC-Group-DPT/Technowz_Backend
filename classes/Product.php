@@ -115,6 +115,17 @@ class Product
     }
 
     //static
+    public static function getTotalCategory($conn, $type)
+    {
+        $stmt = $conn->prepare("SELECT COUNT(*) as 'total'
+                                from products
+                                where type = ?");
+        $stmt->bind_param("s", $type);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        return $result->fetch_assoc();
+    }
+
     public static function getProductsByCategory($conn, $type, $orderBy, $option, $offset = 0, $limit = 8)
     {
         //security

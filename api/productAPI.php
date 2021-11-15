@@ -25,6 +25,10 @@
                 successApi($arr);
             else failAPI("No product found");
         }
+        else if($_GET['command'] == 'getTotalCategory'){
+            $data = Product::getTotalCategory($conn, $_GET['typeOfProduct']);
+            successApi($data);
+        }
         else if($_GET['command'] == 'getProductCategory'){
             $data = Product::getProductsByCategory($conn, $_GET['typeOfProduct'], $_GET['orderBy'], $_GET['option'], $_GET['offset'], $_GET['limit']);
             successApi($data);
