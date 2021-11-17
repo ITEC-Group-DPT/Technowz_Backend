@@ -3,7 +3,20 @@ include './apiheader.php';
 include '../classes/User.php';
 $user = new User($conn);
 
-if (isset($_POST['command'])) {
+if (isset($_GET['command'])) {
+    if ($_GET['command'] == "checkToken") {
+        $header = getallheaders();
+
+        if (isset($header['Userid'])) {
+            if ($user->getUser("userID", $header['Userid'])) {
+                successApi("validate user success");
+                return;
+            }
+        }
+        failApi("validate user fail");
+    }
+}
+else if (isset($_POST['command'])) {
     if ($_POST['command'] == 'signUp') {
         $email = $_POST['email'];
         $username = $_POST['username'];
@@ -20,7 +33,5 @@ if (isset($_POST['command'])) {
             successApi($res['data']);
         else
             failApi($res['data']);
-    }
-    else failApi("No command found!");
-}
-else failApi("No command found!");
+    } else failApi("No command found!");
+} else failApi("No command found!");
