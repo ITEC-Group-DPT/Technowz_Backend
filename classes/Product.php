@@ -161,7 +161,7 @@ class Product
 
     public static function getProducts($conn, $value, $limit = 5)
     {
-        $value = "%" . $value . "%";
+        $value = "%" . str_replace(' ', '%', $value) . "%";
         $stmt = $conn->prepare("SELECT p.productID, p.name, pimg.img1, p.rating, p.sold, p.price
                                 from products p, productimage pimg
                                 where p.productID = pimg.productID and p.name like ? limit ?");
