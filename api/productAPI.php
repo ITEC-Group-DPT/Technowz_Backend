@@ -62,8 +62,9 @@
         $data['img4'] = isset($_POST['img4']) ? $_POST['img4'] : "";
 
         if($_POST['command'] == 'create'){
-            if($product->createProduct($data))
-                successApi("New product created");
+            $res = $product->createProduct($data);
+            if($res)
+                successApi($res);
             else failApi("No product created");
         }
         else if($_POST['command'] == 'modify'){
