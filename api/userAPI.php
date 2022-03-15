@@ -2,7 +2,6 @@
 include './apiheader.php';
 include '../classes/User.php';
 $user = new User($conn);
-+
 $header = getallheaders();
 
 if (isset($_GET['command'])) {
