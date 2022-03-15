@@ -29,7 +29,7 @@ else if (isset($_POST['command'])) {
                 failApi("Username change unsuccessfully");
         }
         else if($_POST['command'] == 'updatePassword') {
-            $password = $_POST['password'];
+            $password = $_POST['oldpassword'];
             $newPassword = $_POST['newpassword'];
             $res = $user->updatePassword($userID, $password, $newPassword);
             if($res['isSuccess'])
