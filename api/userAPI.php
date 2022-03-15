@@ -35,7 +35,7 @@ else if (isset($_POST['command'])) {
             if($res['isSuccess'])
                 successApi("Password change successfully");
             else
-                failApi("Password change unsuccessfully");
+                failApi($res['data']);
         }
     }
     else if ($_POST['command'] == 'signUp') {

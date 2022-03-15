@@ -91,17 +91,22 @@
                 $row = $this->getUser("userID", $userID);
                 $oldHash = password_hash($old, PASSWORD_DEFAULT);
                 if (password_verify($oldHash, $row['password'])) {
-                    $stmt = $this->conn->prepare("UPDATE users SET password = ? where userID = ? ");
                     $newH = password_hash($new, PASSWORD_DEFAULT);
-                    $stmt->bind_param("si", $newH, $userID);
+                    if (password_verify($oldHash,$newH)){
+                        $res['data'] = 'Password cannot be the same with your current';
+                        return $res;
+                    }
+                    $stmt = $this->conn->prepare("UPDATE users SET password = ? where userID = ? ");
+                                        $stmt->bind_param("si", $newH, $userID);
                     $stmt->execute();
                     if($stmt->affected_rows == 1){
                         $res['isSuccess'] = true;
                         $res['data'] = 'Change password successfully';
                     }
                 }
+                else $res['data'] = "Check your password again";
             }
-            else $res['data']['errorUserID'] = "UserID not found";
+            else $res['data'] = "UserID not found";
             return $res;
         }
        
