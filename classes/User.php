@@ -68,7 +68,7 @@
             $stmt->execute();
         }
 
-        public function changeUsername($userID, $newUsername){
+        public function updateUsername($userID, $newUsername){
             $res = [];
             $res['isSuccess'] = false;
             $res['data'] = 'Unable to change username';

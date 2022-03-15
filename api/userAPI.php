@@ -31,7 +31,7 @@ else if (isset($_POST['command'])) {
         else if($_POST['command'] == 'updatePassword') {
             $password = $_POST['password'];
             $newPassword = $_POST['newpassword'];
-            $res = $user->updatePassword($userID, $password, $newUsername);
+            $res = $user->updatePassword($userID, $password, $newPassword);
             if($res['isSuccess'])
                 successApi("Password change successfully");
             else
