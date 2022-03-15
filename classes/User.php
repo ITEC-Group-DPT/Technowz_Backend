@@ -83,4 +83,26 @@
             }
             return $res;
         }
+
+        public function updatePassword($userID,$old,$new){
+            $res = [];
+            $res['isSuccess'] = false;
+            if ($this->getUser("userID", $userID) != false) {
+                $row = $this->getUser("userID", $userID);
+                $oldHash = password_hash($old, PASSWORD_DEFAULT);
+                if (password_verify($oldHash, $row['password'])) {
+                    $stmt = $this->conn->prepare("UPDATE users SET password = ? where userID = ? ");
+                    $newH = password_hash($new, PASSWORD_DEFAULT);
+                    $stmt->bind_param("si", $newH, $userID);
+                    $stmt->execute();
+                    if($stmt->affected_rows == 1){
+                        $res['isSuccess'] = true;
+                        $res['data'] = 'Change password successfully';
+                    }
+                }
+            }
+            else $res['data']['errorUserID'] = "UserID not found";
+            return $res;
+        }
+       
     }
