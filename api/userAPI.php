@@ -2,6 +2,8 @@
 include './apiheader.php';
 include '../classes/User.php';
 $user = new User($conn);
++
+$header = getallheaders();
 
 if (isset($_GET['command'])) {
     if ($_GET['command'] == "checkToken") {
@@ -17,7 +19,27 @@ if (isset($_GET['command'])) {
     }
 }
 else if (isset($_POST['command'])) {
-    if ($_POST['command'] == 'signUp') {
+    if (isset($header['Userid'])){
+        $userID = $header['Userid'];
+        if($_POST['command'] == 'updateUsername') {
+            $newUsername = $_POST['newusername'];
+            $res = $user->updateUsername($userID, $newUsername);
+            if($res['isSuccess'])
+                successApi("Username change successfully");
+            else
+                failApi("Username change unsuccessfully");
+        }
+        else if($_POST['command'] == 'updatePassword') {
+            $password = $_POST['password'];
+            $newPassword = $_POST['newpassword'];
+            $res = $user->updatePassword($userID, $password, $newUsername);
+            if($res['isSuccess'])
+                successApi("Password change successfully");
+            else
+                failApi("Password change unsuccessfully");
+        }
+    }
+    else if ($_POST['command'] == 'signUp') {
         $email = $_POST['email'];
         $username = $_POST['username'];
         $password = $_POST['password'];
@@ -33,20 +55,5 @@ else if (isset($_POST['command'])) {
             successApi($res['data']);
         else
             failApi($res['data']);
-    }
-    else if ($_POST['command'] == 'changeUsername') {
-        $header = getallheaders();
-        if(!isset($header['Userid'])){
-            failApi('Unauthenticated request');
-            return;
-        }
-        $newUsername = $_POST['newUsername'];
-        $userID = $header['Userid'];
-        $res = $user->changeUsername($userID, $newUsername);
-        if ($res['isSuccess'])
-            successApi($res['data']);
-        else
-            failApi($res['data']);
-    }
-    else failApi("No command found!");
+    } else failApi("No command found!");
 } else failApi("No command found!");
