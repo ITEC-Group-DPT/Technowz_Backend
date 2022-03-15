@@ -33,5 +33,20 @@ else if (isset($_POST['command'])) {
             successApi($res['data']);
         else
             failApi($res['data']);
-    } else failApi("No command found!");
+    }
+    else if ($_POST['command'] == 'changeUsername') {
+        $header = getallheaders();
+        if(!isset($header['Userid'])){
+            failApi('Unauthenticated request');
+            return;
+        }
+        $newUsername = $_POST['newUsername'];
+        $userID = $header['Userid'];
+        $res = $user->changeUsername($userID, $newUsername);
+        if ($res['isSuccess'])
+            successApi($res['data']);
+        else
+            failApi($res['data']);
+    }
+    else failApi("No command found!");
 } else failApi("No command found!");
