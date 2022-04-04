@@ -14,7 +14,8 @@
             successApi($data);
         }
         else if ($_GET['command'] == 'getIncomeSummary'){
-
+            $data = Order::getIncomeSummary($conn, $_GET['sortBy']);
+            successApi($data);
         }
     }
 

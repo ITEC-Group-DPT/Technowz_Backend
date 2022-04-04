@@ -121,5 +121,18 @@
             $results = $stmt->get_result();
             return $results->fetch_all(MYSQLI_ASSOC);
         }
+
+        public static function getIncomeSummary($conn, $sortBy = 'month', $interval = 5){
+            $stmt = $conn->prepare("SELECT $sortBy(dateCreated) as $sortBy, SUM(totalPrice) as 'income'
+                                    FROM orders
+                                    WHERE dateCreated >= CURDATE() - INTERVAL ? $sortBy
+                                    GROUP BY $sortBy(dateCreated)
+                                    ORDER BY dateCreated ASC");
+
+            $stmt->bind_param("i", $interval);
+            $stmt->execute();
+            $results = $stmt->get_result();
+            return $results->fetch_all(MYSQLI_ASSOC);
+        }
     }
 ?>
