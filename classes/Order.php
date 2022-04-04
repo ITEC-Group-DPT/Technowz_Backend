@@ -25,7 +25,7 @@
             $stmt = $this->conn->prepare('SELECT sold
                                         from products
                                         where productID = ?');
-            
+
             $stmt->bind_param("i", $productID);
             $stmt->execute();
             $result = $stmt->get_result()->fetch_assoc();
@@ -41,9 +41,9 @@
 
         public function getOrderList($userID, $offset = 0, $limit = 5){
             $stmt = $this->conn->prepare("SELECT ord.orderID, p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold
-                                            FROM orders ord, orderdetails ordz,products p, productimage i 
-                                            WHERE ord.userID = ? and ord.orderID = ordz.orderID 
-                                                    and p.productID = i.productID and p.productID = ordz.productID 
+                                            FROM orders ord, orderdetails ordz,products p, productimage i
+                                            WHERE ord.userID = ? and ord.orderID = ordz.orderID
+                                                    and p.productID = i.productID and p.productID = ordz.productID
                                             ORDER BY ord.orderID desc ");
             $stmt->bind_param("i", $userID);
             $stmt->execute();
@@ -69,7 +69,7 @@
                 ];
                 if (!isset($ords[$orderID])) $ords[$orderID] = [];
                 array_push($ords[$orderID], $obj);
-                
+
             }
             return $ords;
         }
@@ -77,7 +77,7 @@
         public function getItemList($orderID, $userID){
             $stmt = $this->conn->prepare("SELECT p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold, ordz.rating as 'customerRating'
                                             from orders o, orderdetails ordz, products p, productimage i
-                                            where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID 
+                                            where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID
                                                     and ordz.productID = p.productID and p.productID = i.productID");
             $stmt->bind_param("ii", $orderID, $userID);
             $stmt->execute();
@@ -88,8 +88,8 @@
         }
 
         public function getOrderInfo($orderID, $userID){
-            $stmt = $this->conn->prepare("SELECT *, TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff' 
-                                            from orders 
+            $stmt = $this->conn->prepare("SELECT *, TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff'
+                                            from orders
                                             where orderID = ? and userID = ?");
             $stmt->bind_param("ii", $orderID, $userID);
             $stmt->execute();
@@ -101,12 +101,25 @@
 
         public function rateProduct($orderID, $productID, $rating){
             $stmt = $this->conn->prepare("UPDATE orderdetails
-                                        set rating = ? 
+                                        set rating = ?
                                         where orderID = ? and productID = ?");
             $stmt->bind_param("dii", $rating, $orderID, $productID);
             $stmt->execute();
             if($stmt->affected_rows == 1) return true;
             else return false;
+        }
+
+        public static function getOrderSummary($conn, $sortBy = 'month', $interval = 5){
+            $stmt = $conn->prepare("SELECT $sortBy(dateCreated) as $sortBy, COUNT(*) as 'orders'
+                                    FROM orders
+                                    WHERE dateCreated >= CURDATE() - INTERVAL ? $sortBy
+                                    GROUP BY $sortBy(dateCreated)
+                                    ORDER BY dateCreated ASC");
+
+            $stmt->bind_param("i", $interval);
+            $stmt->execute();
+            $results = $stmt->get_result();
+            return $results->fetch_all(MYSQLI_ASSOC);
         }
     }
 ?>
