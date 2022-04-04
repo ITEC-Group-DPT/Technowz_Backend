@@ -1,4 +1,4 @@
 <?php
-    include './apiheader.php';
+    include '../api/apiheader.php';
 
 ?>
