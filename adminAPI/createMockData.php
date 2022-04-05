@@ -18,7 +18,7 @@ $stat = new Statistic($conn);
 $userArray = $mock->getAllUserID();
 $productArray = $mock->getAllProductID();
 
-$PAST = 1648746060; //01-04-2021
+$PAST = 1646095056; //01-04-2021
 
 if (!isset($_POST['command'])) failApi("Invalid request");
 
@@ -57,7 +57,7 @@ if ($command == "ProductView") {
 
 if ($command == "CreateOrder") {
 
-    for ($j = 0; $j < 50; $j++) {
+    for ($j = 0; $j < 10; $j++) {
         $productList = [];
         $totalPrice = 0;
 

@@ -17,7 +17,7 @@
         $curData = floatval($curData);
         $pastData = floatval($pastData);
 
-        if ($pastData == 0) return $curData;
+        if ($pastData == 0) return 1;
 
         $res = ($curData - $pastData)/ $pastData;
         $format = number_format((float)$res, 2, '.', '');
