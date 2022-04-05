@@ -5,6 +5,7 @@
     $header = getallheaders();
 
     if (isset($_GET['command'])){
+
         if ($_GET['command'] == 'getOrderSummary'){
             $data = Order::getOrderSummary($conn, $_GET['sortBy']);
             successApi($data);
@@ -15,14 +16,22 @@
             successApi($data);
         }
 
-        else if($_GET['command'] == 'getOrderTotalPage'){
-            $data = Order::getTotalOrder($conn);
+        else if ($_GET['command'] == 'getOrderByStatus'){
+            $data = Order::getOrderByStatus($conn, $_GET['sortByStatus']);
             successApi($data);
         }
 
-        else if ($_GET['command'] == 'getOrderListByPage'){
-            $data = Order::getOrderListByPage($conn,
-                                                $_GET['sortByStatus'],
+        else if ($_GET['command'] == 'getOrderByPage'){
+            $data = Order::getOrderByPage($conn,
+                                            $_GET['sortByStatus'],
+                                            $_GET['offset'],
+                                            $_GET['limit']);
+            successApi($data);
+        }
+
+        else if ($_GET['command'] == 'searchOrdersByPage'){
+            $data = Order::searchOrdersByPage($conn,
+                                                $_GET['search'],
                                                 $_GET['offset'],
                                                 $_GET['limit']);
             successApi($data);
