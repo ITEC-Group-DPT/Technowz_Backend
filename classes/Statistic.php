@@ -45,18 +45,18 @@ class Statistic
     {
 
         $where_clauseA = "YEAR(dateCreated) = YEAR(CURDATE())";
-        $where_clauseB = "YEAR(dateCreated) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))";
+        $where_clauseB = "YEAR(dateCreated) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
 
         $filter = strtoupper($filter);
 
 
         if ($filter == "MONTH" || $filter == "DAY") {
             $where_clauseA .= " AND MONTH(dateCreated) = MONTH(CURDATE())";
-            $where_clauseB .= " AND MONTH(dateCreated) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))";
+            $where_clauseB .= " AND MONTH(dateCreated) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
         }
         if ($filter == "DAY") {
             $where_clauseA .= " AND DAY(dateCreated) = DAY(CURDATE())";
-            $where_clauseB .= " AND DAY(dateCreated) = DAY(DATE_SUB(CURDATE(), INTERVAL 1 DAY))";
+            $where_clauseB .= " AND DAY(dateCreated) = DAY(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
         }
 
 
@@ -125,18 +125,18 @@ class Statistic
     public function getVisitByTime($filter)
     {
         $where_clauseA = "YEAR(time) = YEAR(CURDATE())";
-        $where_clauseB = "YEAR(time) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 YEAR))";
+        $where_clauseB = "YEAR(time) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
 
         $filter = strtoupper($filter);
 
 
         if (strcmp($filter, "MONTH") == 0 || strcmp($filter, "DAY") == 0) {
             $where_clauseA .= " AND MONTH(`time`) = MONTH(CURDATE())";
-            $where_clauseB .= " AND MONTH(`time`) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))";
+            $where_clauseB .= " AND MONTH(`time`) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
         }
         if (strcmp($filter, "DAY") == 0) {
             $where_clauseA .= " AND DAY(`time`) = DAY(CURDATE())";
-            $where_clauseB .= " AND DAY(`time`) = DAY(DATE_SUB(CURDATE(), INTERVAL 1 DAY))";
+            $where_clauseB .= " AND DAY(`time`) = DAY(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
         }
 
 

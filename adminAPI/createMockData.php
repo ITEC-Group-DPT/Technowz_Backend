@@ -18,6 +18,8 @@ $stat = new Statistic($conn);
 $userArray = $mock->getAllUserID();
 $productArray = $mock->getAllProductID();
 
+$PAST = 1627750860; //08-01-2021
+
 if (!isset($_POST['command'])) failApi("Invalid request");
 
 $command = $_POST['command'];
@@ -31,7 +33,7 @@ if ($command == "UserVisit") {
 
         $randomUser = $users[array_rand($users, 1)];
 
-        $int = rand(1627750800, time());
+        $int = rand($PAST, time());
         $time = date("Y-m-d H:i:s", $int);
 
         $stat->updateUserVisit($randomUser, $time);
@@ -44,7 +46,7 @@ if ($command == "ProductView") {
 
         $randomProduct = $productArray[array_rand($productArray, 1)];
 
-        $int = rand(1627750800, time());
+        $int = rand($PAST, time());
         $time = date("Y-m-d H:i:s", $int);
 
         $stat->updateProductView($randomProduct, $time);
@@ -75,7 +77,7 @@ if ($command == "CreateOrder") {
         $user = new User($conn);
         $randomName = $user->getUser("userID", $randomUserID)['username'];
 
-        $int = rand(1627750800, time());
+        $int = rand($PAST, time());
         $time = date("Y-m-d H:i:s", $int);
 
         $order = new Order($conn);
