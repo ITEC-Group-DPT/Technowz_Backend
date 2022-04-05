@@ -1,47 +1,38 @@
 <?php
     include '../api/apiheader.php';
-    include '../classes/Order.php';
+    include '../classes/OrderReport.php';
 
     $header = getallheaders();
 
     if (isset($_GET['command'])){
+        $orderReport = new OrderReport($conn);
 
         if ($_GET['command'] == 'getOrderSummary'){
-            $data = Order::getOrderSummary($conn, $_GET['sortBy']);
+            $data = $orderReport->getOrderSummary($_GET['sortBy']);
             successApi($data);
         }
 
         else if ($_GET['command'] == 'getIncomeSummary'){
-            $data = Order::getIncomeSummary($conn, $_GET['sortBy']);
+            $data = $orderReport->getIncomeSummary($_GET['sortBy']);
             successApi($data);
         }
 
         else if ($_GET['command'] == 'getOrderByPage'){
             // return a list of order (with pagination)
-            $data = Order::getOrderByOption($conn,
-                                            $_GET['search'],
-                                            $_GET['sortByStatus'],
-                                            false,
-                                            $_GET['offset'],
-                                            $_GET['limit']);
+            $data = $orderReport->getOrderByOption($_GET['search'],
+                                                   $_GET['sortByStatus'],
+                                                   false,
+                                                   $_GET['offset'],
+                                                   $_GET['limit']);
             successApi($data);
         }
 
         else if ($_GET['command'] == 'getOrderByFilter'){
             // return an object with totalPage and a list of order (default set list of page 1)
-            $data = Order::getOrderByOption($conn,
-                                            $_GET['search'],
-                                            $_GET['sortByStatus']);
+            $data = $orderReport->getOrderByOption($_GET['search'],
+                                                   $_GET['sortByStatus']);
             successApi($data);
         }
-
-        // else if ($_GET['command'] == 'getOrderBySearch'){
-        //     // return an object with totalPage and a list of order (default set list of page 1)
-        //     $data = Order::getOrderBySearch($conn,
-        //                                     $_GET['search'],
-        //                                     $_GET['sortByStatus']);
-        //     successApi($data);
-        // }
     }
 
     else if (isset($_POST['command'])){
