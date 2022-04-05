@@ -134,5 +134,46 @@
             $results = $stmt->get_result();
             return $results->fetch_all(MYSQLI_ASSOC);
         }
+
+        public static function getTotalOrder($conn){
+            $stmt = $conn->prepare("SELECT COUNT(*) as 'total'
+                                    FROM orders");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            return $result->fetch_assoc();
+        }
+
+        public static function getOrderListByPage($conn, $sortByStatus = "All", $offset = 0, $limit = 10){
+            if($sortByStatus == "All") {
+                $stmt = $conn->prepare("SELECT
+                                            o.orderID as 'id',
+                                            o.name as 'cusName',
+                                            DATE_FORMAT(o.dateCreated, '%d/%m/%Y') as 'date',
+                                            o.totalPrice as 'price',
+                                            s.statusID as 'status'
+                                        FROM orders o, orderstatus s, statusname n
+                                        WHERE o.orderID = s.orderID and s.statusID = n.statusID
+                                        ORDER BY o.dateCreated DESC
+                                        LIMIT ?, ?");
+                $stmt->bind_param("ii", $offset, $limit);
+            }
+
+            else {
+                $stmt = $conn->prepare("SELECT
+                                            o.orderID as 'id',
+                                            o.name as 'cusName',
+                                            DATE_FORMAT(o.dateCreated, '%d/%m/%Y) as 'date',
+                                            o.totalPrice as 'price',
+                                            s.statusID as 'status'
+                                        FROM orders o, orderstatus s, statusname n
+                                        WHERE o.orderID = s.orderID and s.statusID = n.statusID and n.statusName = ?
+                                        ORDER BY o.dateCreated DESC
+                                        LIMIT ?, ?");
+                $stmt->bind_param("sii", $sortByStatus, $offset, $limit);
+            }
+
+            $stmt->execute();
+            $results = $stmt->get_result();
+            return $results->fetch_all(MYSQLI_ASSOC);
+        }
     }
-?>
