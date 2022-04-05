@@ -108,5 +108,7 @@
             if($stmt->affected_rows == 1) return true;
             else return false;
         }
+
+        
     }
 ?>
