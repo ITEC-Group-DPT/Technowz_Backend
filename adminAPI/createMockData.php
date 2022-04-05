@@ -18,7 +18,7 @@ $stat = new Statistic($conn);
 $userArray = $mock->getAllUserID();
 $productArray = $mock->getAllProductID();
 
-$PAST = 1627750860; //08-01-2021
+$PAST = 1648746060; //01-04-2021
 
 if (!isset($_POST['command'])) failApi("Invalid request");
 

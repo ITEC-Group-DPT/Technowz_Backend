@@ -60,8 +60,6 @@
             $finalData['customer'] = $visitData;
             
             foreach ($finalData as $key => $value) {
-                print($finalData[$key]['percent']);
-
                 $finalData[$key]['percent'] = calculateDiffPercent($value); 
             }
 
