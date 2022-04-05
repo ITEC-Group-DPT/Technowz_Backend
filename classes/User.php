@@ -86,16 +86,4 @@ class User
         return $object['userRole'] == 1;
     }
 
-    public static function getTotalAccountNum($conn)
-    {
-        $stmt = $conn->prepare("SELECT COUNT(*) as 'totalUsers'
-        FROM users");
-
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-
-        if ($result->num_rows != 0)
-            return $result->fetch_assoc();
-    }
 }
