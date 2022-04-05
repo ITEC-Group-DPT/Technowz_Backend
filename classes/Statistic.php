@@ -50,11 +50,11 @@ class Statistic
         $filter = strtoupper($filter);
 
 
-        if (strcmp($filter, "MONTH") == 0 || strcmp($filter, "DAY") == 0) {
+        if ($filter == "MONTH" || $filter == "DAY") {
             $where_clauseA .= " AND MONTH(dateCreated) = MONTH(CURDATE())";
             $where_clauseB .= " AND MONTH(dateCreated) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 MONTH))";
         }
-        if (strcmp($filter, "DAY") == 0) {
+        if ($filter == "DAY") {
             $where_clauseA .= " AND DAY(dateCreated) = DAY(CURDATE())";
             $where_clauseB .= " AND DAY(dateCreated) = DAY(DATE_SUB(CURDATE(), INTERVAL 1 DAY))";
         }

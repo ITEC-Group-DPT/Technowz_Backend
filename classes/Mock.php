@@ -49,4 +49,23 @@ class Mock
         return $object;
     }
 
+    public function getAllOrderID()
+    {
+        $stmt = $this->conn->prepare("SELECT orderID FROM orders");
+
+
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        $fetch = $result->fetch_all();
+
+        $object = [];
+        foreach ($fetch as $value) {
+            array_push($object, $value[0]);
+        }
+
+        return $object;
+    }
+
 }

@@ -8,18 +8,40 @@ class Order
         $this->conn = $conn;
     }
 
-    public function createOrder($userID, $name, $address, $phone, $totalPrice, $productList)
+    public function createOrder($userID, $name, $address, $phone, $totalPrice, $productList, $date = null)
     {
-        $stmt = $this->conn->prepare('INSERT into orders (userID, name, address, phone, totalPrice) values (?,?,?,?,?)');
-        $stmt->bind_param('isssi', $userID, $name, $address, $phone, $totalPrice);
+        if ($date == null) {
+            $stmt = $this->conn->prepare('INSERT into orders (userID, name, address, phone, totalPrice) values (?,?,?,?,?)');
+
+            $stmt->bind_param('isssi', $userID, $name, $address, $phone, $totalPrice);
+        }
+        else {
+            $stmt = $this->conn->prepare('INSERT into orders (userID, name, address, phone, totalPrice, dateCreated) values (?,?,?,?,?,?)');
+
+            $stmt->bind_param('isssis', $userID, $name, $address, $phone, $totalPrice, $date);
+
+        }
+
         $stmt->execute();
         $orderID = $this->conn->insert_id;
+
         foreach ($productList as $product) {
-            $stmt1 = $this->conn->prepare('INSERT into orderdetails (orderID, productID, quantity) values (?,?,?)');
-            $stmt1->bind_param('sss', $orderID, $product[0], $product[1]);
+            $stmt1 = $this->conn->prepare('INSERT into orderdetails (orderID, productID, quantity, price) values (?,?,?,?)');
+
+            $stmt1->bind_param('ssss', $orderID, $product[0], $product[1], $product[2]);
+
             $stmt1->execute();
             $this->updateSoldProduct($product[0], $product[1]);
         }
+
+        $stmt2 = $this->conn->prepare("INSERT INTO orderstatus (orderID, statusID) values (?, 1)");
+
+
+        $stmt2->bind_param('i', $orderID);
+
+        $stmt2->execute();
+        echo "\nsuccessOrder: " . $orderID;
+
         if ($stmt->affected_rows != 0) return true;
         else return false;
     }
