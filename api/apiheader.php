@@ -5,6 +5,7 @@
             "http://localhost:3000",
             "http://192.168.1.155:3000",
             "http://localhost:8080",
+            "http://localhost:3001",
             "https://technow-b54b6.web.app",
         ];
 

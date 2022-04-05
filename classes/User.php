@@ -32,6 +32,7 @@
                     $arr['userRole'] = $row['userRole'];
                     $res['isSuccess'] = true;
                     $res['data'] = $arr;
+                    $this->recordSignIn($row['userID']);
                 }
                 else $res['data']['errorPassword'] = "Password is incorrect";
             }
@@ -66,5 +67,50 @@
             $stmt = $this->conn->prepare("INSERT INTO carts (userID) values (?)");
             $stmt->bind_param("i", $this->userID);
             $stmt->execute();
+        }
+
+        public function recordSignIn($userID){
+            $stmt = $this->conn->prepare("INSERT INTO uservisit (userID) values (?)");
+            $stmt->bind_param("i", $userID);
+            $stmt->execute();
+            // $result = $stmt->get_result();
+            // if ($result->num_rows == 1) return true;
+            // else return false;
+        }
+    
+        public function getChartData($time){
+            if($time == 'month'){
+                $stmt = $this->conn->prepare("SELECT MONTH(uv.time), COUNT(uv.time) FROM uservisit uv GROUP BY MONTH(uv.time)");
+            }else if($time == 'week'){
+                $stmt = $this->conn->prepare("SELECT WEEK(uv.time), COUNT(uv.time) FROM uservisit uv GROUP BY WEEK(uv.time)");
+            }else if($time == 'year'){
+                $stmt = $this->conn->prepare("SELECT YEAR(uv.time), COUNT(uv.time) FROM uservisit uv GROUP BY YEAR(uv.time)");
+            }else{
+                $stmt = $this->conn->prepare("SELECT DAY(uv.time), COUNT(uv.time) FROM uservisit uv GROUP BY DAY(uv.time)");
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows != 0){
+                $arr = [];
+                $arr['isSuccess'] = true;
+                $arr['data'] = $result->fetch_all();
+                return $arr;
+            }
+            else return false;
+        }
+
+        public function getLeaderBoardData(){
+            $res = [];
+            $res['isSuccess'] = false;
+            $stmt = $this->conn->prepare("SELECT o.userID, o.name, o.totalPrice FROM orders o GROUP BY o.userID ORDER BY `o`.`totalPrice` DESC");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows != 0){
+                $arr = [];
+                $arr['isSuccess'] = true;
+                $arr['data'] = $result->fetch_all();
+                return $arr;
+            }
+            else return false;
         }
     }
