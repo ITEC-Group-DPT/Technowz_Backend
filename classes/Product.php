@@ -174,7 +174,7 @@ class Product
     public static function getAllProduct($conn){
         $stmt = $conn->prepare("SELECT *
                             from products p, productimage img
-                            where p.productID = img.productID")
+                            where p.productID = img.productID");
         $stmt->execute();
         $results = $stmt->get_result();
         return $results->fetch_all(MYSQLI_ASSOC);
