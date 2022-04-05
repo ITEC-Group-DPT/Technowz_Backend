@@ -29,11 +29,8 @@
             successApi($data);
         }
 
-        else if ($_GET['command'] == 'searchOrdersByPage'){
-            $data = Order::searchOrdersByPage($conn,
-                                                $_GET['search'],
-                                                $_GET['offset'],
-                                                $_GET['limit']);
+        else if ($_GET['command'] == 'getOrderBySearch'){
+            $data = Order::getOrderBySearch($conn, $_GET['search']);
             successApi($data);
         }
     }
