@@ -102,7 +102,7 @@
         public function getLeaderBoardData(){
             $res = [];
             $res['isSuccess'] = false;
-            $stmt = $this->conn->prepare("SELECT o.userID, o.name, o.totalPrice FROM orders o GROUP BY o.userID ORDER BY `o`.`totalPrice` DESC");
+            $stmt = $this->conn->prepare("SELECT o.userID, o.name, sum(o.totalPrice) FROM orders o GROUP BY o.userID ORDER BY sum(o.totalPrice) DESC");
             $stmt->execute();
             $result = $stmt->get_result();
             if ($result->num_rows != 0){
