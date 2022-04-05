@@ -170,4 +170,13 @@ class Product
         $results = $stmt->get_result();
         return $results->fetch_all(MYSQLI_ASSOC);
     }
+
+    public static function getAllProduct($conn){
+        $stmt = $conn->prepare("SELECT *
+                            from product p, productimage img
+                            where p.productID = img.productID")
+         $stmt->execute();
+         $results = $stmt->get_result();
+         return $results->fetch_all(MYSQLI_ASSOC);
+    }
 }
