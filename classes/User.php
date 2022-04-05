@@ -83,7 +83,7 @@ class User
 
         $object = $result->fetch_assoc();
 
-        return $object['userRole'] == 1;
+        return $object['userRole'] == 0;
     }
 
 }

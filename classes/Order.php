@@ -115,18 +115,4 @@ class Order
         if ($stmt->affected_rows == 1) return true;
         else return false;
     }
-
-    public static function getTotalOrderData($conn)
-    {
-        $stmt = $conn->prepare("SELECT COUNT(orderID) as 'totalOrders', 
-        SUM(totalPrice) as 'totalSales' 
-        FROM orders");
-
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-
-        if ($result->num_rows != 0)
-            return $result->fetch_assoc();
-    }
 }

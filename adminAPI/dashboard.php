@@ -18,7 +18,11 @@
         $pastData = floatval($pastData);
 
         if ($pastData == 0) return $curData;
-        return ($curData - $pastData)/ $pastData;
+
+        $res = ($curData - $pastData)/ $pastData;
+        $format = number_format((float)$res, 2, '.', '');
+
+        return $format;
     }
 
     if (isset($header['Userid'])) {

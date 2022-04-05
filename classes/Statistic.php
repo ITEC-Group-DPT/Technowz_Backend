@@ -9,6 +9,24 @@ class Statistic
         $this->conn = $conn;
     }
 
+    public function updateUserVisit($userID, $time)
+    {
+        $stmt = $this->conn->prepare("INSERT INTO uservisit VALUES (?,?)");
+        $stmt->bind_param("is", $userID, $time);
+
+
+        $stmt->execute();
+    }
+
+    public function updateProductView($productID, $time)
+    {
+        $stmt = $this->conn->prepare("INSERT INTO productview VALUES (?,?)");
+        $stmt->bind_param("is", $productID, $time);
+
+
+        $stmt->execute();
+    }
+
     public function getTotalOrderData()
     {
         $stmt = $this->conn->prepare("SELECT COUNT(orderID) as 'totalOrders', 
@@ -73,19 +91,19 @@ class Statistic
         $object = [];
 
         $object['sale'] = array(
-            'current' => $assoc['curSales'],
-            'past' => $assoc['pastSales'],
+            'current' => (int)$assoc['curSales'],
+            'past' => (int)$assoc['pastSales'],
         );
 
         $object['order'] = array(
-            'current' => $assoc['curOrders'],
-            'past' => $assoc['pastOrders']
+            'current' =>(int) $assoc['curOrders'],
+            'past' => (int)$assoc['pastOrders']
         );
 
 
         $object['item'] = array(
-            'current' => $assoc['curItems'],
-            'past' => $assoc['pastItems']
+            'current' => (int)$assoc['curItems'],
+            'past' => (int)$assoc['pastItems']
         );
 
         return $object;
@@ -123,7 +141,7 @@ class Statistic
 
 
         $stmt = $this->conn->prepare(
-            "SELECT COUNT(*) as 'curVisit'
+            "SELECT COUNT(*) as 'current'
         FROM uservisit 
         WHERE $where_clauseA"
         );
@@ -135,7 +153,7 @@ class Statistic
 
 
         $stmt2 = $this->conn->prepare(
-            "SELECT COUNT(*) as 'pastVisit'
+            "SELECT COUNT(*) as 'past'
         FROM uservisit 
         WHERE $where_clauseB"
         );
