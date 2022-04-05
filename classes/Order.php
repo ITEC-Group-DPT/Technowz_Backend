@@ -40,7 +40,6 @@ class Order
         $stmt2->bind_param('i', $orderID);
 
         $stmt2->execute();
-        echo "\nsuccessOrder: " . $orderID;
 
         if ($stmt->affected_rows != 0) return true;
         else return false;
