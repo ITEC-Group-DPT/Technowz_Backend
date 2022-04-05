@@ -146,48 +146,79 @@
             return $results->fetch_all(MYSQLI_ASSOC);
         }
 
-        public static function getOrderByPage($conn, $sortByStatus = "All", $offset = 0, $limit = 10){
-            $sql = "SELECT
-                        o.orderID as 'id',
-                        o.name as 'cusName',
-                        DATE_FORMAT(o.dateCreated, '%d/%m/%Y') as 'date',
-                        o.totalPrice as 'price',
-                        s.statusID as 'status'
-                    FROM
-                        orders o,
-                        orderstatus s,
-                        statusname n
-                    WHERE
-                        o.orderID = s.orderID and
-                        s.statusID = n.statusID and
-                        s.updateDate = (SELECT MAX(s2.updateDate)
-                	                    FROM
-                                            orders o2,
-                                            orderstatus s2
-                 	                    WHERE
-                                            o2.orderID = s2.orderID and
-                                            o.orderID = o2.orderID)";
+        public static function getOrderByOption($conn, $searchVal = "", $sortByStatus = "All", $getTotalOrder = true, $offset = 0, $limit = 10){
+            $result = [];
+
+            $searchVal = "%" . str_replace(' ', '%', $searchVal) . "%";
+
+            $sqlOrderList ="SELECT
+                                o.orderID as 'id',
+                                o.name as 'cusName',
+                                DATE_FORMAT(o.dateCreated, '%d/%m/%Y') as 'date',
+                                o.totalPrice as 'price',
+                                s.statusID as 'status'
+                            FROM
+                                orders o,
+                                orderstatus s,
+                                statusname n
+                            WHERE
+                                o.orderID = s.orderID and
+                                s.statusID = n.statusID and
+                                (o.orderID like ? or o.name like ?) and
+                                s.updateDate = (SELECT MAX(s2.updateDate)
+                                                FROM
+                                                    orders o2,
+                                                    orderstatus s2
+                                                WHERE
+                                                    o2.orderID = s2.orderID and
+                                                    o.orderID = o2.orderID)";
 
             if($sortByStatus != "All")
-                $sql .= " and n.statusName = ?";
+                $sqlOrderList .= " and n.statusName = ?";
 
-            $sql .= " ORDER BY o.dateCreated DESC
+            $sqlOrderList .= " ORDER BY o.dateCreated DESC
                       LIMIT ?, ?";
 
-            $stmt = $conn->prepare($sql);
+            $stmtOrderList = $conn->prepare($sqlOrderList);
 
             if($sortByStatus != "All")
-                $stmt->bind_param("sii", $sortByStatus, $offset, $limit);
+                $stmtOrderList->bind_param("sssii", $searchVal, $searchVal, $sortByStatus, $offset, $limit);
             else
-                $stmt->bind_param("ii", $offset, $limit);
+                $stmtOrderList->bind_param("ssii", $searchVal, $searchVal, $offset, $limit);
 
-            $stmt->execute();
-            $results = $stmt->get_result();
+            $stmtOrderList->execute();
+            $resultOrderList = $stmtOrderList->get_result()->fetch_all(MYSQLI_ASSOC);
 
-            return $results->fetch_all(MYSQLI_ASSOC);
+            $result['orderList'] = $resultOrderList;
+
+            if($getTotalOrder == true) {
+                $sqlTotalOrder="SELECT count(distinct(o.orderID)) as 'total'
+                                FROM
+                                    orders o,
+                                    orderstatus s,
+                                    statusname n
+                                WHERE
+                                    o.orderID = s.orderID and
+                                    s.statusID = n.statusID";
+
+                if($sortByStatus != "All")
+                    $sqlTotalOrder .= " and n.statusName = ?";
+
+                $stmtTotalOrder = $conn->prepare($sqlTotalOrder);
+
+                if($sortByStatus != "All")
+                    $stmtTotalOrder->bind_param("s", $sortByStatus);
+
+                $stmtTotalOrder->execute();
+                $resultTotalOrder = $stmtTotalOrder->get_result()->fetch_assoc();
+
+                $result['total'] = $resultTotalOrder['total'];
+            }
+
+            return $result;
         }
 
-        public static function getOrderByStatus($conn, $sortByStatus = "All", $offset = 0, $limit = 10){
+        public static function getOrderByFilter2($conn, $searchVal= "", $sortByStatus = "All", $offset = 0, $limit = 10){
             $sqlOrderList ="SELECT
                                 o.orderID as 'id',
                                 o.name as 'cusName',
@@ -249,53 +280,53 @@
             return($result);
         }
 
-        public static function getOrderBySearch($conn, $search = "", $offset = 0, $limit = 10){
-            $search = "%" . str_replace(' ', '%', $search) . "%";
+        // public static function getOrderBySearch($conn, $search = "", $offset = 0, $limit = 10){
+        //     $search = "%" . str_replace(' ', '%', $search) . "%";
 
-            $sqlOrderList ="SELECT
-                                o.orderID as 'id',
-                                o.name as 'cusName',
-                                DATE_FORMAT(o.dateCreated, '%d/%m/%Y') as 'date',
-                                o.totalPrice as 'price',
-                                s.statusID as 'status'
-                            FROM
-                                orders o,
-                                orderstatus s,
-                                statusname n
-                            WHERE
-                                o.orderID = s.orderID and
-                                s.statusID = n.statusID and
-                                (o.orderID like ? or o.name like ?) and
-                                s.updateDate = (SELECT MAX(s2.updateDate)
-                                                FROM
-                                                    orders o2,
-                                                    orderstatus s2
-                                                WHERE
-                                                    o2.orderID = s2.orderID and
-                                                    o.orderID = o2.orderID)
-                            ORDER BY o.dateCreated DESC
-                            LIMIT ?, ?";
+        //     $sqlOrderList ="SELECT
+        //                         o.orderID as 'id',
+        //                         o.name as 'cusName',
+        //                         DATE_FORMAT(o.dateCreated, '%d/%m/%Y') as 'date',
+        //                         o.totalPrice as 'price',
+        //                         s.statusID as 'status'
+        //                     FROM
+        //                         orders o,
+        //                         orderstatus s,
+        //                         statusname n
+        //                     WHERE
+        //                         o.orderID = s.orderID and
+        //                         s.statusID = n.statusID and
+        //                         (o.orderID like ? or o.name like ?) and
+        //                         s.updateDate = (SELECT MAX(s2.updateDate)
+        //                                         FROM
+        //                                             orders o2,
+        //                                             orderstatus s2
+        //                                         WHERE
+        //                                             o2.orderID = s2.orderID and
+        //                                             o.orderID = o2.orderID)
+        //                     ORDER BY o.dateCreated DESC
+        //                     LIMIT ?, ?";
 
-            $sqlTotalOrder = "SELECT count(distinct(o.orderID)) as 'total'
-                              FROM orders
-                              WHERE (orderID like ? or name like ?)";
+        //     $sqlTotalOrder = "SELECT count(distinct(o.orderID)) as 'total'
+        //                       FROM orders
+        //                       WHERE (orderID like ? or name like ?)";
 
-            $stmtOrderList = $conn->prepare($sqlOrderList);
-            $stmtTotalOrder = $conn->prepare($sqlTotalOrder);
+        //     $stmtOrderList = $conn->prepare($sqlOrderList);
+        //     $stmtTotalOrder = $conn->prepare($sqlTotalOrder);
 
-            $stmtOrderList->bind_param("ssii",$search ,$search, $offset, $limit);
-            $stmtTotalOrder->bind_param("ss",$search ,$search);
+        //     $stmtOrderList->bind_param("ssii",$search ,$search, $offset, $limit);
+        //     $stmtTotalOrder->bind_param("ss",$search ,$search);
 
-            $stmtOrderList->execute();
-            $resultOrderList = $stmtOrderList->get_result()->fetch_all(MYSQLI_ASSOC);
+        //     $stmtOrderList->execute();
+        //     $resultOrderList = $stmtOrderList->get_result()->fetch_all(MYSQLI_ASSOC);
 
-            $stmtTotalOrder->execute();
-            $resultTotalOrder = $stmtTotalOrder->get_result()->fetch_assoc();
+        //     $stmtTotalOrder->execute();
+        //     $resultTotalOrder = $stmtTotalOrder->get_result()->fetch_assoc();
 
-            $result = [];
-            $result['total'] = $resultTotalOrder['total'];
-            $result['orderList'] = $resultOrderList;
+        //     $result = [];
+        //     $result['total'] = $resultTotalOrder['total'];
+        //     $result['orderList'] = $resultOrderList;
 
-            return($result);
-        }
+        //     return($result);
+        // }
     }

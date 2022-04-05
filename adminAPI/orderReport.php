@@ -16,23 +16,32 @@
             successApi($data);
         }
 
-        else if ($_GET['command'] == 'getOrderByStatus'){
-            $data = Order::getOrderByStatus($conn, $_GET['sortByStatus']);
-            successApi($data);
-        }
-
         else if ($_GET['command'] == 'getOrderByPage'){
-            $data = Order::getOrderByPage($conn,
+            // return a list of order (with pagination)
+            $data = Order::getOrderByOption($conn,
+                                            $_GET['search'],
                                             $_GET['sortByStatus'],
+                                            false,
                                             $_GET['offset'],
                                             $_GET['limit']);
             successApi($data);
         }
 
-        else if ($_GET['command'] == 'getOrderBySearch'){
-            $data = Order::getOrderBySearch($conn, $_GET['search']);
+        else if ($_GET['command'] == 'getOrderByFilter'){
+            // return an object with totalPage and a list of order (default set list of page 1)
+            $data = Order::getOrderByOption($conn,
+                                            $_GET['search'],
+                                            $_GET['sortByStatus']);
             successApi($data);
         }
+
+        // else if ($_GET['command'] == 'getOrderBySearch'){
+        //     // return an object with totalPage and a list of order (default set list of page 1)
+        //     $data = Order::getOrderBySearch($conn,
+        //                                     $_GET['search'],
+        //                                     $_GET['sortByStatus']);
+        //     successApi($data);
+        // }
     }
 
     else if (isset($_POST['command'])){
