@@ -80,50 +80,14 @@
     
         public function getVisitedUsers($time){
             if($time == 'month'){
-                $stmt = $this->conn->prepare("SELECT MONTH(uv.time), COUNT(uv.time) FROM uservisit uv WHERE uv.userID = -1 GROUP BY MONTH(uv.time)");
+                $stmt = $this->conn->prepare("SELECT MONTH(uv.time) AS month, COUNT(uv.time) AS users FROM uservisit uv WHERE uv.userID = -1 GROUP BY MONTH(uv.time)");
             }else if($time == 'week'){
-                $stmt = $this->conn->prepare("SELECT WEEK(uv.time), COUNT(uv.time) FROM uservisit uv WHERE uv.userID = -1 GROUP BY WEEK(uv.time))");
+                $stmt = $this->conn->prepare("SELECT WEEK(uv.time) AS week, COUNT(uv.time) AS users FROM uservisit uv WHERE uv.userID = -1 GROUP BY WEEK(uv.time)");
             }else if($time == 'year'){
-                $stmt = $this->conn->prepare("SELECT YEAR(uv.time), COUNT(uv.time) FROM uservisit uv WHERE uv.userID = -1 GROUP BY YEAR(uv.time)");
+                $stmt = $this->conn->prepare("SELECT YEAR(uv.time) AS year, COUNT(uv.time) AS users FROM uservisit uv WHERE uv.userID = -1 GROUP BY YEAR(uv.time)");
             }else{
-                $stmt = $this->conn->prepare("SELECT DAY(uv.time), COUNT(uv.time) FROM uservisit uv WHERE uv.userID = -1 GROUP BY DAY(uv.time)");
+                $stmt = $this->conn->prepare("SELECT DAY(uv.time) AS day, COUNT(uv.time) AS users FROM uservisit uv WHERE uv.userID = -1 GROUP BY DAY(uv.time)");
             }
-            $stmt->execute();
-            $result = $stmt->get_result();
-            if ($result->num_rows != 0){
-                $arr = [];
-                $arr['isSuccess'] = true;
-                $arr['data'] = $result->fetch_all();
-                return $arr;
-            }
-            else return false;
-        }
-
-        public function getActiveUsers($time){
-            if($time == 'month'){
-                $stmt = $this->conn->prepare("SELECT MONTH(dateCreated), COUNT(userID) FROM users GROUP BY MONTH(dateCreated))");
-            }else if($time == 'week'){
-                $stmt = $this->conn->prepare("SELECT WEEK(dateCreated), COUNT(userID) FROM users GROUP BY WEEK(dateCreated)");
-            }else if($time == 'year'){
-                $stmt = $this->conn->prepare("SELECT YEAR(dateCreated), COUNT(userID) FROM users GROUP BY YEAR(dateCreated)");
-            }else{
-                $stmt = $this->conn->prepare("SELECT DAY(dateCreated), COUNT(userID) FROM users GROUP BY DAY(dateCreated))");
-            }
-            $stmt->execute();
-            $result = $stmt->get_result();
-            if ($result->num_rows != 0){
-                $arr = [];
-                $arr['isSuccess'] = true;
-                $arr['data'] = $result->fetch_all();
-                return $arr;
-            }
-            else return false;
-        }
-
-        public function getLeaderBoardData(){
-            $res = [];
-            $res['isSuccess'] = false;
-            $stmt = $this->conn->prepare("SELECT u.userID, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC");
             $stmt->execute();
             $result = $stmt->get_result();
             if ($result->num_rows != 0){
@@ -133,5 +97,49 @@
                 return $arr;
             }
             else return false;
+        }
+
+        public function getActiveUsers($time){
+            if($time == 'month'){
+                $stmt = $this->conn->prepare("SELECT MONTH(dateCreated) AS month, COUNT(userID) AS users FROM users GROUP BY MONTH(dateCreated)");
+            }else if($time == 'week'){
+                $stmt = $this->conn->prepare("SELECT WEEK(dateCreated) AS week, COUNT(userID) AS users FROM users GROUP BY WEEK(dateCreated)");
+            }else if($time == 'year'){
+                $stmt = $this->conn->prepare("SELECT YEAR(dateCreated) AS year, COUNT(userID) AS users FROM users GROUP BY YEAR(dateCreated)");
+            }else{
+                $stmt = $this->conn->prepare("SELECT DAY(dateCreated) AS day, COUNT(userID) AS users FROM users GROUP BY DAY(dateCreated)");
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows != 0){
+                $arr = [];
+                $arr['isSuccess'] = true;
+                $arr['data'] = $result->fetch_all(MYSQLI_ASSOC);
+                return $arr;
+            }
+            else return false;
+        }
+
+        public function getLeaderBoardData(){
+            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC");
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows != 0){
+                $arr = [];
+                $arr['isSuccess'] = true;
+                $arr['data'] = $result->fetch_all(MYSQLI_ASSOC);
+                return $arr;
+            }
+            else return false;
+        }
+
+        public function getChartsData($time){
+            $activeData = $this->getActiveUsers($time);
+            $visitedData = $this->getVisitedUsers($time);
+            $arr = [];
+            $arr['isSuccess'] = true;
+            $arr['data']['active'] = $activeData['data'];
+            $arr['data']['visited'] = $visitedData['data'];
+            return json_encode($arr);
         }
     }

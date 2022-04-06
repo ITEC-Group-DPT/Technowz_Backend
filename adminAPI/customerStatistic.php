@@ -54,7 +54,7 @@
             }
         }else if($_GET['command'] == 'getActiveUsers'){
             if($_GET['each'] == 'year'){
-                if($user->getVisitedUsers('year')){
+                if($user->getActiveUsers('year')){
                     $res = $user->getActiveUsers('year');
                     if($res['isSuccess']){
                         successApi($res['data']);
@@ -90,7 +90,44 @@
                     }
                 }
             }
+        }else if($_GET['command'] = 'getChartsData'){
+            if($_GET['each'] == 'year'){
+                if($user->getChartsData('year')){
+                    $res = json_decode($user->getChartsData('year'), true);
+                    if($res["isSuccess"]){
+                        successApi(json_encode($res['data']));
+                    }else{
+                        failApi("isLoading");
+                    }
+                }
+            }else if($_GET['each'] == 'week'){
+                if($user->getChartsData('week')){
+                    $res = json_decode($user->getChartsData('week'), true);
+                    if($res["isSuccess"]){
+                        successApi(json_encode($res['data']));
+                    }else{
+                        failApi("isLoading");
+                    }
+                }
+            }else if($_GET['each'] == 'month'){
+                if($user->getChartsData('month')){
+                    $res = json_decode($user->getChartsData('month'), true);
+                    if($res["isSuccess"]){
+                        successApi(json_encode($res['data']));
+                    }else{
+                        failApi("isLoading");
+                    }
+                }
+            }else if($_GET['each'] == 'day'){
+                if($user->getChartsData('day')){
+                    $res = json_decode($user->getChartsData('day'), true);
+                    if($res["isSuccess"]){
+                        successApi(json_encode($res['data']));
+                    }else{
+                        failApi("isLoading");
+                    }
+                }
+            }
         }
     }
-
 ?>
