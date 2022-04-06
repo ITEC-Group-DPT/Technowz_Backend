@@ -116,4 +116,14 @@
 
             return $result;
         }
+
+
+        public function updateStatus($orderID, $statusID){
+            $stmt1 = $this->conn->prepare('INSERT INTO orderstatus (orderID, statusID)
+                                           VALUES (?, ?);');
+            $stmt1->bind_param('ii', $orderID, $statusID);
+            $stmt1->execute();
+            if($stmt1->affected_rows == 1) return true;
+            else return false;
+        }
     }

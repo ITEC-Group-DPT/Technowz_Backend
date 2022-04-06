@@ -3,9 +3,9 @@
     include '../classes/OrderReport.php';
 
     $header = getallheaders();
+    $orderReport = new OrderReport($conn);
 
     if (isset($_GET['command'])){
-        $orderReport = new OrderReport($conn);
 
         if ($_GET['command'] == 'getOrderSummary'){
             $data = $orderReport->getOrderSummary($_GET['sortBy']);
@@ -37,6 +37,10 @@
 
     else if (isset($_POST['command'])){
 
+        if($_POST['command'] == 'updateStatus'){
+            if($orderReport->updateStatus($_POST['orderID'], $_POST['statusID']))
+                successApi("Status was updated successfully");
+        }
     }
 
 ?>
