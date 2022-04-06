@@ -115,7 +115,7 @@ class Product
     }
 
     public function getProductComment(){
-        $stmt = $this->conn->prepare("SELECT comment from orderdetails where productID = ?")
+        $stmt = $this->conn->prepare("SELECT comment from orderdetails where productID = ?");
         $stmt->bind_param("i", $this->productID);
         $stmt->execute();
         $results = $stmt->get_result();
