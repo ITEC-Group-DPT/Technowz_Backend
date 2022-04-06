@@ -27,7 +27,7 @@ class Statistic
     }
     public function getTopRevenue($currentInterval)
     {
-        $stmt = $this->conn->prepare("SELECT products.productID, products.name, products.price, ifnull(sum(orderdetails.quantity) * products.price,0) as revenue FROM products LEFT JOIN (orderdetails inner JOIN orders on orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}) on products.productID = orderdetails.productID GROUP by products.productID, products.name, products.price ORDER by revenue DESC LIMIT 6;");
+        $stmt = $this->conn->prepare("SELECT products.productID, (SELECT productimage.img1 FROM productimage where productimage.productID = products.productID) productimg, products.name, products.price, ifnull(sum(orderdetails.quantity) * products.price,0) as revenue FROM products LEFT JOIN (orderdetails inner JOIN orders on orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}) on products.productID = orderdetails.productID GROUP by products.productID, products.name, products.price ORDER by revenue DESC LIMIT 6;");
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_all(MYSQLI_ASSOC);
@@ -36,7 +36,7 @@ class Statistic
 
     public function getBestSeller($currentInterval, $previousInterval)
     {
-        $stmt = $this->conn->prepare("        SELECT products.productID, products.name, products.price, ifnull(sum(orderdetails.quantity),0) unit, IFNULL(((sum(orderdetails.quantity)) - (SELECT sum(od.quantity) FROM orderdetails od, orders where orders.orderID = od.orderID and orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and od.productID = orderdetails.productID)) / (SELECT  sum(od.quantity) FROM orderdetails od, orders where orders.orderID = od.orderID and orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and od.productID = orderdetails.productID) * 100,0) as up 
+        $stmt = $this->conn->prepare("SELECT products.productID,(SELECT productimage.img1 FROM productimage where productimage.productID = products.productID) productimg, products.name, products.price, ifnull(sum(orderdetails.quantity),0) unit, IFNULL(((sum(orderdetails.quantity)) - (SELECT sum(od.quantity) FROM orderdetails od, orders where orders.orderID = od.orderID and orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and od.productID = orderdetails.productID)) / (SELECT  sum(od.quantity) FROM orderdetails od, orders where orders.orderID = od.orderID and orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and od.productID = orderdetails.productID) * 100,0) as up 
         FROM products LEFT JOIN (orderdetails inner JOIN orders on orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}) on products.productID = orderdetails.productID GROUP by products.productID, products.name, products.price ORDER by unit DESC limit 1;
         ");
         $stmt->execute();
@@ -46,7 +46,7 @@ class Statistic
     }
     public function getMostViewed($currentInterval, $previousInterval)
     {
-        $stmt = $this->conn->prepare("SELECT products.productID,products.name,COUNT(productview.productID) view , IFNULL(((COUNT(productview.productID) - (SELECT count(productID) FROM productview where productID = products.productID and productview.datetime >= {$previousInterval} and productview.datetime < {$currentInterval})) / (SELECT count(productID) FROM productview where productID = products.productID and productview.datetime >= {$previousInterval} and productview.datetime < {$currentInterval}) * 100),0) as up FROM products LEFT JOIN productview on products.productID = productview.productID and productview.datetime >= {$currentInterval} GROUP by products.productID,products.name ORDER by view DESC limit 1 ");
+        $stmt = $this->conn->prepare("SELECT products.productID, (SELECT productimage.img1 FROM productimage where productimage.productID = products.productID) productimg, products.name,COUNT(productview.productID) view , IFNULL(((COUNT(productview.productID) - (SELECT count(productID) FROM productview where productID = products.productID and productview.datetime >= {$previousInterval} and productview.datetime < {$currentInterval})) / (SELECT count(productID) FROM productview where productID = products.productID and productview.datetime >= {$previousInterval} and productview.datetime < {$currentInterval}) * 100),0) as up FROM products LEFT JOIN productview on products.productID = productview.productID and productview.datetime >= {$currentInterval} GROUP by products.productID,products.name ORDER by view DESC limit 1 ");
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_all(MYSQLI_ASSOC);
