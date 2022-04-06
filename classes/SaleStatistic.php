@@ -76,9 +76,9 @@ class Statistic
             $defaultcol = $defaultcol - 1;
             $date = "DATE(now() - INTERVAL {$defaultcol} {$sortby})";
             if ($sortby == 'day')
-                $stmt = $this->conn->prepare("select day({$date}) month, ifnull(sum(orders.totalPrice),0) income  FROM orders WHERE date(orders.dateCreated) = {$date};");
+                $stmt = $this->conn->prepare("select DATE_FORMAT({$date}, '%d/%m')  month, ifnull(sum(orders.totalPrice),0) income  FROM orders WHERE date(orders.dateCreated) = {$date};");
             elseif ($sortby == 'month')
-                $stmt = $this->conn->prepare("select LEFT(monthname({$date}),3) month, ifnull(sum(orders.totalPrice),0) income  FROM orders WHERE {$sortby}(orders.dateCreated) = {$sortby}({$date});");
+                $stmt = $this->conn->prepare("select LEFT(monthname({$date}),3) month, ifnull(sum(orders.totalPrice),0) income  FROM orders WHERE {$sortby}(orders.dateCreated) = {$sortby}({$date}) and year(orders.dateCreated) = year({$date});");
             elseif ($sortby == 'year')
                 $stmt = $this->conn->prepare("select year({$date}) month, ifnull(sum(orders.totalPrice),0) income  FROM orders WHERE {$sortby}(orders.dateCreated) = {$sortby}({$date});");
             $stmt->execute();
