@@ -27,6 +27,43 @@
             return $res;
         }
 
+        private function substitution($char, $type) {
+            $plain = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+            $cipher = ['5', 'T', '7', 'I', 'Z', '9', 'M', 'A', 'E', '4'];
+
+            if($type == 'enc') {
+                $index = array_search($char, $plain);
+                return $cipher[$index];
+            }
+
+            if($type == 'dec') {
+                $index = array_search($char, $cipher);
+                return $plain[$index];
+            }
+        }
+
+        private function encrypt($orderID) {
+            $encryptedID = "";
+            $chars = str_split($orderID);
+
+            foreach ($chars as $char) {
+                $encryptedID .= $this->substitution($char, 'enc');
+            }
+
+            return $encryptedID;
+        }
+
+        private function decrypt($encryptedID) {
+            $orderID = "";
+            $chars = str_split($encryptedID);
+
+            foreach ($chars as $char) {
+                $orderID .= $this->substitution($char, 'dec');
+            }
+
+            return $orderID;
+        }
+
         public function getOrderSummary($sortBy = 'Month'){
             $option = $this->getOption($sortBy);
             $format = $option['format'];
@@ -71,7 +108,6 @@
             $results = $stmt->get_result();
             return $results->fetch_all(MYSQLI_ASSOC);
         }
-
 
         public function getIncomeSummary($sortBy = 'month'){
             $option = $this->getOption($sortBy);
@@ -118,11 +154,17 @@
             return $results->fetch_all(MYSQLI_ASSOC);
         }
 
-
         public function getOrderByOption($searchVal = "", $sortByStatus = "All", $getTotalOrder = true, $offset = 0, $limit = 10){
             $result = [];
 
-            $searchVal = "%" . str_replace(' ', '%', $searchVal) . "%";
+            $decryptedSearch = $this->decrypt($searchVal);
+
+            $searchVal = "%" . $searchVal . "%";
+            $decryptedSearch = "%" .  $decryptedSearch . "%";
+
+            // echo($searchVal);
+            // echo("\n\n");
+            // echo($decryptedSearch);
 
             $sqlOrderList ="SELECT
                                 o.orderID as 'id',
@@ -155,9 +197,9 @@
             $stmtOrderList = $this->conn->prepare($sqlOrderList);
 
             if ($sortByStatus != "All")
-                $stmtOrderList->bind_param("sssii", $searchVal, $searchVal, $sortByStatus, $offset, $limit);
+                $stmtOrderList->bind_param("sssii", $decryptedSearch, $searchVal, $sortByStatus, $offset, $limit);
             else
-                $stmtOrderList->bind_param("ssii", $searchVal, $searchVal, $offset, $limit);
+                $stmtOrderList->bind_param("ssii", $decryptedSearch, $searchVal, $offset, $limit);
 
             $stmtOrderList->execute();
             $resultOrderList = $stmtOrderList->get_result()->fetch_all(MYSQLI_ASSOC);
@@ -188,9 +230,9 @@
                 $stmtTotalOrder = $this->conn->prepare($sqlTotalOrder);
 
                 if ($sortByStatus != "All")
-                    $stmtTotalOrder->bind_param("sss", $searchVal, $searchVal, $sortByStatus);
+                    $stmtTotalOrder->bind_param("sss", $decryptedSearch, $searchVal, $sortByStatus);
                 else
-                    $stmtTotalOrder->bind_param("ss", $searchVal, $searchVal);
+                    $stmtTotalOrder->bind_param("ss", $decryptedSearch, $searchVal);
 
                 $stmtTotalOrder->execute();
                 $resultTotalOrder = $stmtTotalOrder->get_result()->fetch_assoc();
@@ -198,14 +240,19 @@
                 $result['total'] = $resultTotalOrder['total'];
             }
 
+            foreach ($result['orderList'] as &$order) {
+                $order['id'] = $this->encrypt($order['id']);
+            }
+
             return $result;
         }
 
-
         public function updateStatus($orderID, $statusID){
+            $decryptedOrderID = $this->decrypt($orderID);
+
             $stmt1 = $this->conn->prepare('INSERT INTO orderstatus (orderID, statusID)
                                            VALUES (?, ?);');
-            $stmt1->bind_param('ii', $orderID, $statusID);
+            $stmt1->bind_param('ii', $decryptedOrderID, $statusID);
             $stmt1->execute();
 
             if ($stmt1->affected_rows == 1)
