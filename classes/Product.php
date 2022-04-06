@@ -114,6 +114,14 @@ class Product
         else return false;
     }
 
+    public function getProductComment(){
+        $stmt = $this->conn->prepare("SELECT comment from orderdetails where productID = ?")
+        $stmt->bind_param("i", $this->productID);
+        $stmt->execute();
+        $results = $stmt->get_result();
+        return $results->fetch_all(MYSQLI_ASSOC);
+    }
+
     //static
     public static function getTotalCategory($conn, $type)
     {

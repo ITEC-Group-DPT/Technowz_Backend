@@ -108,5 +108,15 @@
             if($stmt->affected_rows == 1) return true;
             else return false;
         }
+
+        public function commentProduct($orderID, $productID, $comment){
+            $stmt = $this->conn->prepare("UPDATE orderdetails
+                                        set comment = ? 
+                                        where orderID = ? and productID = ?");
+            $stmt->bind_param("sii", $comment, $orderID, $productID);
+            $stmt->execute();
+            if($stmt->affected_rows == 1) return true;
+            else return false;
+        }
     }
 ?>
