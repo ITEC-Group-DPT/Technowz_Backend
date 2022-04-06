@@ -27,7 +27,7 @@ class Statistic
     }
     public function getTopRevenue($currentInterval)
     {
-        $stmt = $this->conn->prepare("SELECT products.productID, (SELECT productimage.img1 FROM productimage where productimage.productID = products.productID) productimg, products.name, products.price, ifnull(sum(orderdetails.quantity) * products.price,0) as revenue FROM products LEFT JOIN (orderdetails inner JOIN orders on orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}) on products.productID = orderdetails.productID GROUP by products.productID, products.name, products.price ORDER by revenue DESC LIMIT 6;");
+        $stmt = $this->conn->prepare("SELECT products.productID, (SELECT productimage.img1 FROM productimage where productimage.productID = products.productID) productimg, products.name, products.price, ifnull(sum(orderdetails.quantity) * products.price,0) as revenue FROM products LEFT JOIN (orderdetails inner JOIN orders on orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}) on products.productID = orderdetails.productID GROUP by products.productID, products.name, products.price ORDER by revenue DESC LIMIT 5;");
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_all(MYSQLI_ASSOC);
@@ -76,11 +76,11 @@ class Statistic
             $defaultcol = $defaultcol - 1;
             $date = "DATE(now() - INTERVAL {$defaultcol} {$sortby})";
             if ($sortby == 'day')
-                $stmt = $this->conn->prepare("select DATE_FORMAT({$date}, '%d/%m')  month, ifnull(sum(orders.totalPrice),0) income  FROM orders WHERE date(orders.dateCreated) = {$date};");
+                $stmt = $this->conn->prepare("select DATE_FORMAT({$date}, '%d/%m')  month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders WHERE date(orders.dateCreated) = {$date};");
             elseif ($sortby == 'month')
-                $stmt = $this->conn->prepare("select LEFT(monthname({$date}),3) month, ifnull(sum(orders.totalPrice),0) income  FROM orders WHERE {$sortby}(orders.dateCreated) = {$sortby}({$date}) and year(orders.dateCreated) = year({$date});");
+                $stmt = $this->conn->prepare("select LEFT(monthname({$date}),3) month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders WHERE {$sortby}(orders.dateCreated) = {$sortby}({$date}) and year(orders.dateCreated) = year({$date});");
             elseif ($sortby == 'year')
-                $stmt = $this->conn->prepare("select year({$date}) month, ifnull(sum(orders.totalPrice),0) income  FROM orders WHERE {$sortby}(orders.dateCreated) = {$sortby}({$date});");
+                $stmt = $this->conn->prepare("select year({$date}) month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders WHERE {$sortby}(orders.dateCreated) = {$sortby}({$date});");
             $stmt->execute();
             $result = $stmt->get_result();
             array_push($res, $result->fetch_all(MYSQLI_ASSOC)[0]);
