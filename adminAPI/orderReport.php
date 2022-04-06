@@ -6,41 +6,34 @@
     $orderReport = new OrderReport($conn);
 
     if (isset($_GET['command'])){
+        $data = [];
 
-        if ($_GET['command'] == 'getOrderSummary'){
+        if ($_GET['command'] == 'getOrderSummary')
             $data = $orderReport->getOrderSummary($_GET['sortBy']);
-            successApi($data);
-        }
 
-        else if ($_GET['command'] == 'getIncomeSummary'){
+        elseif ($_GET['command'] == 'getIncomeSummary')
             $data = $orderReport->getIncomeSummary($_GET['sortBy']);
-            successApi($data);
-        }
 
-        else if ($_GET['command'] == 'getOrderByPage'){
+        elseif ($_GET['command'] == 'getOrderByPage')
             // return a list of order (with pagination)
             $data = $orderReport->getOrderByOption($_GET['search'],
                                                    $_GET['sortByStatus'],
                                                    false,
                                                    $_GET['offset'],
                                                    $_GET['limit']);
-            successApi($data);
-        }
 
-        else if ($_GET['command'] == 'getOrderByFilter'){
+        elseif ($_GET['command'] == 'getOrderByFilter')
             // return an object with totalPage and a list of order (default set list of page 1)
             $data = $orderReport->getOrderByOption($_GET['search'],
                                                    $_GET['sortByStatus']);
-            successApi($data);
-        }
+
+        successApi($data);
     }
 
-    else if (isset($_POST['command'])){
-
-        if($_POST['command'] == 'updateStatus'){
-            if($orderReport->updateStatus($_POST['orderID'], $_POST['statusID']))
+    elseif (isset($_POST['command'])){
+        if ($_POST['command'] == 'updateStatus')
+            if ($orderReport->updateStatus($_POST['orderID'], $_POST['statusID']))
                 successApi("Status was updated successfully");
-        }
     }
 
 ?>

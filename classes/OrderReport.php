@@ -6,29 +6,113 @@
             $this->conn = $conn;
         }
 
+        private function getOption($sortBy){
+            $res = [];
+            switch ($sortBy) {
+                case 'Day':
+                    $res['format'] = "'%d/%m'";
+                    $res['interval'] = 7;
+                    break;
 
-        public function getOrderSummary($sortBy = 'month', $interval = 5){
-            $stmt = $this->conn->prepare("SELECT $sortBy(dateCreated) as $sortBy, COUNT(*) as 'orders'
-                                    FROM orders
-                                    WHERE dateCreated >= CURDATE() - INTERVAL ? $sortBy
-                                    GROUP BY $sortBy(dateCreated)
-                                    ORDER BY dateCreated ASC");
+                case 'Month':
+                    $res['format'] = "'%b'";
+                    $res['interval'] = 6;
+                    break;
 
-            $stmt->bind_param("i", $interval);
+                case 'Year':
+                    $res['format'] = "'%Y'";
+                    $res['interval'] = 2;
+                    break;
+            }
+            return $res;
+        }
+
+        public function getOrderSummary($sortBy = 'Month'){
+            $option = $this->getOption($sortBy);
+            $format = $option['format'];
+            $interval = $option['interval'];
+
+            $sql = "";
+
+            for ($dateBackward = $interval - 1; $dateBackward >= 0; $dateBackward--) {
+                $keyFormat = "date(now() - interval $dateBackward $sortBy)";
+
+                $sql .= "SELECT date_format($keyFormat , $format) as 'key', ifnull(count(*), 0) as 'orders'
+                         FROM orders
+                         WHERE   ";
+
+                if ($sortBy == 'Day')
+                    $sql .= "date(dateCreated) = date(now() - interval $dateBackward Day)";
+
+                else {
+                    if($sortBy == 'Month')
+                        $firstFormat = "'%Y-%m-01'";
+                    else
+                        $firstFormat = "'%Y-01-01'";
+
+                    if ($dateBackward == 0)
+                        $sql .="(dateCreated between date_format(now() , $firstFormat) and now())";
+                    else {
+                        $prev = $dateBackward - 1;
+                        $sql .="(dateCreated between
+                                 date_format(now() - interval $dateBackward $sortBy ,$firstFormat) and
+                                 date_format(now() - interval $prev $sortBy , $firstFormat))";
+                    }
+                }
+
+                if ($dateBackward > 0)
+                    $sql .= "
+                            UNION
+                            ";
+            }
+
+            $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             $results = $stmt->get_result();
             return $results->fetch_all(MYSQLI_ASSOC);
         }
 
 
-        public function getIncomeSummary($sortBy = 'month', $interval = 5){
-            $stmt = $this->conn->prepare("SELECT $sortBy(dateCreated) as $sortBy, SUM(totalPrice) as 'income'
-                                    FROM orders
-                                    WHERE dateCreated >= CURDATE() - INTERVAL ? $sortBy
-                                    GROUP BY $sortBy(dateCreated)
-                                    ORDER BY dateCreated ASC");
+        public function getIncomeSummary($sortBy = 'month'){
+            $option = $this->getOption($sortBy);
+            $format = $option['format'];
+            $interval = $option['interval'];
 
-            $stmt->bind_param("i", $interval);
+            $sql = "";
+
+            for ($dateBackward = $interval - 1; $dateBackward >= 0; $dateBackward--) {
+                $keyFormat = "date(now() - interval $dateBackward $sortBy)";
+
+                $sql .= "SELECT date_format($keyFormat , $format) as 'key', ifnull(sum(o.totalPrice), 0) as 'income'
+                         FROM orders o, orderstatus s
+                         WHERE o.orderID = s.orderID and s.statusID = 4 and   ";
+
+                if ($sortBy == 'Day')
+                    $sql .= "date(o.dateCreated) = date(now() - interval $dateBackward Day)";
+
+                else {
+                    if($sortBy == 'Month')
+                        $firstFormat = "'%Y-%m-01'";
+                    else
+                        $firstFormat = "'%Y-01-01'";
+
+                    if ($dateBackward == 0)
+                        $sql .="(o.dateCreated between date_format(now() , $firstFormat) and now())";
+                    else {
+                        $prev = $dateBackward - 1;
+                        $sql .="(o.dateCreated between
+                                 date_format(now() - interval $dateBackward $sortBy ,$firstFormat) and
+                                 date_format(now() - interval $prev $sortBy , $firstFormat))";
+                    }
+                }
+
+                if ($dateBackward > 0)
+                    $sql .= "
+                            UNION
+                            ";
+            }
+
+            $stmt = $this->conn->prepare($sql);
             $stmt->execute();
             $results = $stmt->get_result();
             return $results->fetch_all(MYSQLI_ASSOC);
@@ -62,7 +146,7 @@
                                                     o2.orderID = s2.orderID and
                                                     o.orderID = o2.orderID)";
 
-            if($sortByStatus != "All")
+            if ($sortByStatus != "All")
                 $sqlOrderList .= " and n.statusName = ?";
 
             $sqlOrderList .= " ORDER BY o.dateCreated DESC
@@ -70,7 +154,7 @@
 
             $stmtOrderList = $this->conn->prepare($sqlOrderList);
 
-            if($sortByStatus != "All")
+            if ($sortByStatus != "All")
                 $stmtOrderList->bind_param("sssii", $searchVal, $searchVal, $sortByStatus, $offset, $limit);
             else
                 $stmtOrderList->bind_param("ssii", $searchVal, $searchVal, $offset, $limit);
@@ -80,7 +164,7 @@
 
             $result['orderList'] = $resultOrderList;
 
-            if($getTotalOrder == true) {
+            if ($getTotalOrder == true) {
                 $sqlTotalOrder="SELECT count(o.orderID) as 'total'
                                 FROM
                                     orders o,
@@ -98,12 +182,12 @@
                                                         o2.orderID = s2.orderID and
                                                         o.orderID = o2.orderID)";
 
-                if($sortByStatus != "All")
+                if ($sortByStatus != "All")
                     $sqlTotalOrder .= " and n.statusName = ?";
 
                 $stmtTotalOrder = $this->conn->prepare($sqlTotalOrder);
 
-                if($sortByStatus != "All")
+                if ($sortByStatus != "All")
                     $stmtTotalOrder->bind_param("sss", $searchVal, $searchVal, $sortByStatus);
                 else
                     $stmtTotalOrder->bind_param("ss", $searchVal, $searchVal);
@@ -123,7 +207,10 @@
                                            VALUES (?, ?);');
             $stmt1->bind_param('ii', $orderID, $statusID);
             $stmt1->execute();
-            if($stmt1->affected_rows == 1) return true;
-            else return false;
+
+            if ($stmt1->affected_rows == 1)
+                return true;
+            else
+                return false;
         }
     }
