@@ -129,17 +129,7 @@
             if ($result->num_rows != 0){
                 $arr = [];
                 $arr['isSuccess'] = true;
-                // foreach($result as $row){
-                //     var_dump($row);
-
-                // }
-
-                // var_dump($result);
-
-                
-                // echo json_encode($result);
-                // $arr['data'] = $result->fetch_all();
-                $arr['data'] = json_encode($result->fetch_all());
+                $arr['data'] = $result->fetch_all(MYSQLI_ASSOC);
                 return $arr;
             }
             else return false;
