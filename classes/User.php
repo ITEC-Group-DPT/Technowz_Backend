@@ -32,7 +32,7 @@
                     $arr['userRole'] = $row['userRole'];
                     $res['isSuccess'] = true;
                     $res['data'] = $arr;
-                    $this->recordSignIn($row['userID']);
+                    // $this->recordSignIn($row['userID']);
                 }
                 else $res['data']['errorPassword'] = "Password is incorrect";
             }
@@ -69,24 +69,45 @@
             $stmt->execute();
         }
 
-        public function recordSignIn($userID){
-            $stmt = $this->conn->prepare("INSERT INTO uservisit (userID) values (?)");
-            $stmt->bind_param("i", $userID);
-            $stmt->execute();
-            // $result = $stmt->get_result();
-            // if ($result->num_rows == 1) return true;
-            // else return false;
-        }
+        // public function recordSignIn($userID){
+        //     $stmt = $this->conn->prepare("INSERT INTO uservisit (userID) values (?)");
+        //     $stmt->bind_param("i", $userID);
+        //     $stmt->execute();
+        //     $result = $stmt->get_result();
+        //     if ($result->num_rows == 1) return true;
+        //     else return false;
+        // }
     
-        public function getChartData($time){
+        public function getVisitedUsers($time){
             if($time == 'month'){
-                $stmt = $this->conn->prepare("SELECT MONTH(uv.time), COUNT(uv.time) FROM uservisit uv GROUP BY MONTH(uv.time)");
+                $stmt = $this->conn->prepare("SELECT MONTH(uv.time), COUNT(uv.time) FROM uservisit uv WHERE uv.userID = -1 GROUP BY MONTH(uv.time)");
             }else if($time == 'week'){
-                $stmt = $this->conn->prepare("SELECT WEEK(uv.time), COUNT(uv.time) FROM uservisit uv GROUP BY WEEK(uv.time)");
+                $stmt = $this->conn->prepare("SELECT WEEK(uv.time), COUNT(uv.time) FROM uservisit uv WHERE uv.userID = -1 GROUP BY WEEK(uv.time))");
             }else if($time == 'year'){
-                $stmt = $this->conn->prepare("SELECT YEAR(uv.time), COUNT(uv.time) FROM uservisit uv GROUP BY YEAR(uv.time)");
+                $stmt = $this->conn->prepare("SELECT YEAR(uv.time), COUNT(uv.time) FROM uservisit uv WHERE uv.userID = -1 GROUP BY YEAR(uv.time)");
             }else{
-                $stmt = $this->conn->prepare("SELECT DAY(uv.time), COUNT(uv.time) FROM uservisit uv GROUP BY DAY(uv.time)");
+                $stmt = $this->conn->prepare("SELECT DAY(uv.time), COUNT(uv.time) FROM uservisit uv WHERE uv.userID = -1 GROUP BY DAY(uv.time)");
+            }
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows != 0){
+                $arr = [];
+                $arr['isSuccess'] = true;
+                $arr['data'] = $result->fetch_all();
+                return $arr;
+            }
+            else return false;
+        }
+
+        public function getActiveUsers($time){
+            if($time == 'month'){
+                $stmt = $this->conn->prepare("SELECT MONTH(dateCreated), COUNT(userID) FROM users GROUP BY MONTH(dateCreated))");
+            }else if($time == 'week'){
+                $stmt = $this->conn->prepare("SELECT WEEK(dateCreated), COUNT(userID) FROM users GROUP BY WEEK(dateCreated)");
+            }else if($time == 'year'){
+                $stmt = $this->conn->prepare("SELECT YEAR(dateCreated), COUNT(userID) FROM users GROUP BY YEAR(dateCreated)");
+            }else{
+                $stmt = $this->conn->prepare("SELECT DAY(dateCreated), COUNT(userID) FROM users GROUP BY DAY(dateCreated))");
             }
             $stmt->execute();
             $result = $stmt->get_result();
@@ -102,13 +123,23 @@
         public function getLeaderBoardData(){
             $res = [];
             $res['isSuccess'] = false;
-            $stmt = $this->conn->prepare("SELECT o.userID, o.name, sum(o.totalPrice) FROM orders o GROUP BY o.userID ORDER BY sum(o.totalPrice) DESC");
+            $stmt = $this->conn->prepare("SELECT o.userID, o.name, sum(o.totalPrice) AS purchasedAmount FROM orders o GROUP BY o.userID ORDER BY sum(o.totalPrice) DESC");
             $stmt->execute();
             $result = $stmt->get_result();
             if ($result->num_rows != 0){
                 $arr = [];
                 $arr['isSuccess'] = true;
-                $arr['data'] = $result->fetch_all();
+                // foreach($result as $row){
+                //     var_dump($row);
+
+                // }
+
+                // var_dump($result);
+
+                
+                // echo json_encode($result);
+                // $arr['data'] = $result->fetch_all();
+                $arr['data'] = json_encode($result->fetch_all());
                 return $arr;
             }
             else return false;

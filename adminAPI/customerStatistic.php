@@ -14,10 +14,10 @@
                     failApi("isLoading");
                 }
             }
-        }else if($_GET['command'] == 'getChartData'){
+        }else if($_GET['command'] == 'getVisitedUsers'){
             if($_GET['each'] == 'year'){
-                if($user->getChartData('year')){
-                    $res = $user->getChartData('year');
+                if($user->getVisitedUsers('year')){
+                    $res = $user->getVisitedUsers('year');
                     if($res['isSuccess']){
                         successApi($res['data']);
                     }else{
@@ -25,8 +25,8 @@
                     }
                 }
             }else if($_GET['each'] == 'week'){
-                if($user->getChartData('week')){
-                    $res = $user->getChartData('week');
+                if($user->getVisitedUsers('week')){
+                    $res = $user->getVisitedUsers('week');
                     if($res['isSuccess']){
                         successApi($res['data']);
                     }else{
@@ -34,8 +34,8 @@
                     }
                 }
             }else if($_GET['each'] == 'month'){
-                if($user->getChartData('month')){
-                    $res = $user->getChartData('month');
+                if($user->getVisitedUsers('month')){
+                    $res = $user->getVisitedUsers('month');
                     if($res['isSuccess']){
                         successApi($res['data']);
                     }else{
@@ -43,8 +43,46 @@
                     }
                 }
             }else if($_GET['each'] == 'day'){
-                if($user->getChartData('day')){
-                    $res = $user->getChartData('day');
+                if($user->getVisitedUsers('day')){
+                    $res = $user->getVisitedUsers('day');
+                    if($res['isSuccess']){
+                        successApi($res['data']);
+                    }else{
+                        failApi("isLoading");
+                    }
+                }
+            }
+        }else if($_GET['command'] == 'getActiveUsers'){
+            if($_GET['each'] == 'year'){
+                if($user->getVisitedUsers('year')){
+                    $res = $user->getActiveUsers('year');
+                    if($res['isSuccess']){
+                        successApi($res['data']);
+                    }else{
+                        failApi("isLoading");
+                    }
+                }
+            }else if($_GET['each'] == 'week'){
+                if($user->getActiveUsers('week')){
+                    $res = $user->getActiveUsers('week');
+                    if($res['isSuccess']){
+                        successApi($res['data']);
+                    }else{
+                        failApi("isLoading");
+                    }
+                }
+            }else if($_GET['each'] == 'month'){
+                if($user->getActiveUsers('month')){
+                    $res = $user->getActiveUsers('month');
+                    if($res['isSuccess']){
+                        successApi($res['data']);
+                    }else{
+                        failApi("isLoading");
+                    }
+                }
+            }else if($_GET['each'] == 'day'){
+                if($user->getActiveUsers('day')){
+                    $res = $user->getActiveUsers('day');
                     if($res['isSuccess']){
                         successApi($res['data']);
                     }else{
