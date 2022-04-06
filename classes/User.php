@@ -80,13 +80,18 @@
     
         public function getVisitedUsers($time){
             if($time == 'month'){
-                $stmt = $this->conn->prepare("SELECT MONTH(uv.time) AS month, COUNT(uv.time) AS users FROM uservisit uv WHERE uv.userID = -1 GROUP BY MONTH(uv.time)");
+                $stmt = $this->conn->prepare("SELECT MONTH(time) AS month, COUNT(time) AS guests FROM uservisit WHERE MONTH(time) >= MONTH(NOW() - INTERVAL 3 MONTH) AND MONTH(time) <= MONTH(NOW()) AND userID = -1 GROUP BY MONTH(time) ORDER BY MONTH(time) ASC");
             }else if($time == 'week'){
-                $stmt = $this->conn->prepare("SELECT WEEK(uv.time) AS week, COUNT(uv.time) AS users FROM uservisit uv WHERE uv.userID = -1 GROUP BY WEEK(uv.time)");
+                $stmt = $this->conn->prepare("SELECT WEEK(uv.time) AS week, COUNT(uv.time) AS guests FROM uservisit uv WHERE uv.userID = -1 GROUP BY WEEK(uv.time)");
             }else if($time == 'year'){
-                $stmt = $this->conn->prepare("SELECT YEAR(uv.time) AS year, COUNT(uv.time) AS users FROM uservisit uv WHERE uv.userID = -1 GROUP BY YEAR(uv.time)");
+                $stmt = $this->conn->prepare("SELECT YEAR(time) AS year, COUNT(userID) AS guests FROM uservisit WHERE YEAR(time) >= YEAR(NOW() - INTERVAL 1 YEAR) AND YEAR(time) <= YEAR(NOW()) AND userID = -1 GROUP BY YEAR(time) ORDER BY YEAR(time)");
             }else{
-                $stmt = $this->conn->prepare("SELECT DAY(uv.time) AS day, COUNT(uv.time) AS users FROM uservisit uv WHERE uv.userID = -1 GROUP BY DAY(uv.time)");
+                $stmt = $this->conn->prepare("SELECT T.days AS day, COALESCE(X.guests,0) AS guests FROM (SELECT 1 days UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15 UNION SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19 UNION SELECT 20 UNION SELECT 21 UNION SELECT 22 UNION SELECT 23 UNION SELECT 24 UNION SELECT 25 UNION SELECT 26 UNION SELECT 27 UNION SELECT 28 UNION SELECT 29 UNION SELECT 30 UNION SELECT 31) T 
+                LEFT JOIN (SELECT DAY(time) AS days, COUNT(time) AS guests
+                FROM uservisit 
+                WHERE time BETWEEN DATE_SUB(NOW(), INTERVAL 6 DAY) AND NOW() AND userID = -1
+                GROUP BY DAY(time)) X ON T.days = X.days
+                WHERE T.days BETWEEN DAY(DATE_SUB(NOW(), INTERVAL 6 DAY)) AND DAY(NOW())");
             }
             $stmt->execute();
             $result = $stmt->get_result();
@@ -101,13 +106,24 @@
 
         public function getActiveUsers($time){
             if($time == 'month'){
-                $stmt = $this->conn->prepare("SELECT MONTH(dateCreated) AS month, COUNT(userID) AS users FROM users GROUP BY MONTH(dateCreated)");
+                $stmt = $this->conn->prepare("SELECT T.months AS month, COALESCE(X.users,0) AS users
+                FROM (SELECT 1 months UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12) T 
+                LEFT JOIN (SELECT MONTH(dateCreated) AS month, COUNT(userID) AS users FROM users
+                WHERE MONTH(dateCreated) >= MONTH(NOW() - INTERVAL 3 MONTH) AND MONTH(dateCreated) <= MONTH(NOW()) 
+                GROUP BY MONTH(dateCreated) ORDER BY MONTH(dateCreated) ASC) X ON T.months = X.month
+                WHERE T.months >= MONTH(NOW() - INTERVAL 3 MONTH) AND T.months <= MONTH(NOW())");
             }else if($time == 'week'){
                 $stmt = $this->conn->prepare("SELECT WEEK(dateCreated) AS week, COUNT(userID) AS users FROM users GROUP BY WEEK(dateCreated)");
             }else if($time == 'year'){
                 $stmt = $this->conn->prepare("SELECT YEAR(dateCreated) AS year, COUNT(userID) AS users FROM users GROUP BY YEAR(dateCreated)");
             }else{
-                $stmt = $this->conn->prepare("SELECT DAY(dateCreated) AS day, COUNT(userID) AS users FROM users GROUP BY DAY(dateCreated)");
+                $stmt = $this->conn->prepare("SELECT T.days AS day, COALESCE(X.users,0) AS users 
+                FROM (SELECT 1 days UNION SELECT 2 UNION SELECT 3 UNION SELECT 4 UNION SELECT 5 UNION SELECT 6 UNION SELECT 7 UNION SELECT 8 UNION SELECT 9 UNION SELECT 10 UNION SELECT 11 UNION SELECT 12 UNION SELECT 13 UNION SELECT 14 UNION SELECT 15 UNION SELECT 16 UNION SELECT 17 UNION SELECT 18 UNION SELECT 19 UNION SELECT 20 UNION SELECT 21 UNION SELECT 22 UNION SELECT 23 UNION SELECT 24 UNION SELECT 25 UNION SELECT 26 UNION SELECT 27 UNION SELECT 28 UNION SELECT 29 UNION SELECT 30 UNION SELECT 31) T 
+                LEFT JOIN (SELECT DAY(dateCreated) AS days, COUNT(userID) AS users
+                           FROM users
+                           WHERE dateCreated BETWEEN DATE_SUB(NOW(), INTERVAL 6 DAY) AND NOW()
+                           GROUP BY DAY(dateCreated)) X ON T.days = X.days
+                           WHERE T.days BETWEEN DAY(DATE_SUB(NOW(), INTERVAL 6 DAY)) AND DAY(NOW())");
             }
             $stmt->execute();
             $result = $stmt->get_result();
