@@ -62,9 +62,11 @@ class Statistic
 
         $stmt = $this->conn->prepare(
             "SELECT COUNT(DISTINCT orders.orderID) as 'curOrders', SUM(price * quantity) as 'curSales', SUM(quantity) as 'curItems' 
-        FROM orders, orderdetails 
-        WHERE $where_clauseA" . " AND orders.orderID = orderdetails.orderID"
+        FROM orders, orderdetails, orderstatus 
+        WHERE $where_clauseA" . " AND orders.orderID = orderdetails.orderID" . 
+        " AND orders.orderID = orderstatus.orderID AND orderstatus.statusID = 4"
         );
+
 
         $stmt->execute();
 
@@ -73,8 +75,9 @@ class Statistic
 
 
         $stmt2 = $this->conn->prepare("SELECT COUNT(DISTINCT orders.orderID) as 'pastOrders', SUM(price * quantity) as 'pastSales', SUM(quantity) as 'pastItems' 
-        FROM orders, orderdetails 
-        WHERE $where_clauseB" . " AND orders.orderID = orderdetails.orderID");
+        FROM orders, orderdetails, orderstatus 
+        WHERE $where_clauseB" . " AND orders.orderID = orderdetails.orderID" .
+        " AND orders.orderID = orderstatus.orderID AND orderstatus.statusID = 4");
 
 
         $stmt2->execute();
@@ -96,7 +99,7 @@ class Statistic
         );
 
         $object['order'] = array(
-            'current' =>(int) $assoc['curOrders'],
+            'current' => (int) $assoc['curOrders'],
             'past' => (int)$assoc['pastOrders']
         );
 
