@@ -29,23 +29,16 @@ class Statistic
 
     public function getTotalOrderData()
     {
-        $stmt = $this->conn->prepare("SELECT COUNT(orderID) as 'totalOrders'
+        $stmt = $this->conn->prepare("SELECT COUNT(orderID) as 'totalOrders', 
+        SUM(totalPrice) as 'totalSales' 
         FROM orders");
 
         $stmt->execute();
 
         $result = $stmt->get_result();
 
-        $stmt2 = $this->conn->prepare("SELECT SUM(totalPrice) as 'totalPrice'
-        FROM orders, orderstatus
-        WHERE orders.orderID = orderstatus.orderID and statusID = 4");
-
-        $stmt2->execute();
-
-        $result2 = $stmt2->get_result();
-
-        if ($result->num_rows != 0 && $result2->num_rows != 0)
-            return $result->fetch_assoc() + $result2->fetch_assoc();
+        if ($result->num_rows != 0)
+            return $result->fetch_assoc();
     }
 
     public function getOrderDataByTime($filter)
@@ -68,47 +61,26 @@ class Statistic
 
 
         $stmt = $this->conn->prepare(
-            "SELECT COUNT(DISTINCT orders.orderID) as 'curOrders' 
-        FROM orders
-        WHERE $where_clauseA"
+            "SELECT COUNT(DISTINCT orders.orderID) as 'curOrders', SUM(price * quantity) as 'curSales', SUM(quantity) as 'curItems' 
+        FROM orders, orderdetails 
+        WHERE $where_clauseA" . " AND orders.orderID = orderdetails.orderID"
         );
 
         $stmt->execute();
 
-        $assocA = $stmt->get_result()->fetch_assoc();
 
-        $stmt = $this->conn->prepare(
-            "SELECT SUM(price * quantity) as 'curSales', SUM(quantity) as 'curItems' 
-        FROM orders, orderdetails, orderstatus 
-        WHERE $where_clauseA" . " AND orders.orderID = orderdetails.orderID" .
-                " AND orders.orderID = orderstatus.orderID AND orderstatus.statusID = 1"
-        );
+        $resultA = $stmt->get_result();
 
-        $stmt->execute();
 
-        $assocA += $stmt->get_result()->fetch_assoc();
-
-        $stmt2 = $this->conn->prepare("SELECT COUNT(DISTINCT orders.orderID) as 'pastOrders'
-        FROM orders
-        WHERE $where_clauseB");
-
-        $stmt2->execute();
-
-        $assocB = $stmt2 ->get_result()->fetch_assoc();
-
-        $stmt2 = $this->conn->prepare(
-            "SELECT SUM(price * quantity) as 'pastSales', SUM(quantity) as 'pastItems' 
-            FROM orders, orderdetails, orderstatus 
-            WHERE $where_clauseB" . " AND orders.orderID = orderdetails.orderID" .
-                    " AND orders.orderID = orderstatus.orderID AND orderstatus.statusID = 1"
-            );
+        $stmt2 = $this->conn->prepare("SELECT COUNT(DISTINCT orders.orderID) as 'pastOrders', SUM(price * quantity) as 'pastSales', SUM(quantity) as 'pastItems' 
+        FROM orders, orderdetails 
+        WHERE $where_clauseB" . " AND orders.orderID = orderdetails.orderID");
 
 
         $stmt2->execute();
-        $assocB += $stmt2 ->get_result()->fetch_assoc();
+        $resultB = $stmt2->get_result();
 
-
-        $assoc = $assocA + $assocB;
+        $assoc = $resultA->fetch_assoc() + $resultB->fetch_assoc();
 
         if ($assoc['curSales'] == null) $assoc['curSales'] = 0;
         if ($assoc['pastSales'] == null) $assoc['pastSales'] = 0;
@@ -124,7 +96,7 @@ class Statistic
         );
 
         $object['order'] = array(
-            'current' => (int) $assoc['curOrders'],
+            'current' =>(int) $assoc['curOrders'],
             'past' => (int)$assoc['pastOrders']
         );
 
