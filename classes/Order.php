@@ -53,11 +53,11 @@ class Order
                                         from products
                                         where productID = ?');
 
-        $stmt->bind_param("i", $productID);
-        $stmt->execute();
-        $result = $stmt->get_result()->fetch_assoc();
-        $newSold = $result['sold'] + $soldQuantity;
-        $stmt1 = $this->conn->prepare('UPDATE products
+            $stmt->bind_param("i", $productID);
+            $stmt->execute();
+            $result = $stmt->get_result()->fetch_assoc();
+            $newSold = $result['sold'] + $soldQuantity;
+            $stmt1 = $this->conn->prepare('UPDATE products
                                         set sold = ?
                                         where productID = ?');
         $stmt1->bind_param('ii', $newSold, $productID);
@@ -109,7 +109,7 @@ class Order
     {
         $stmt = $this->conn->prepare("SELECT p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold, ordz.rating as 'customerRating'
                                             from orders o, orderdetails ordz, products p, productimage i
-                                            where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID 
+                                            where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID
                                                     and ordz.productID = p.productID and p.productID = i.productID");
         $stmt->bind_param("ii", $orderID, $userID);
         $stmt->execute();
