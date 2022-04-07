@@ -26,6 +26,7 @@
         $response['success'] = false;
         if (isset($text))  $response['data'] = $text;
         echo json_encode($response);
+        exit;
     }
 
     function successApi($data,$message = ""){
@@ -35,5 +36,6 @@
 
         if (isset($data)) $response['data'] = $data;
         echo json_encode($response);
+        exit;
     }
 ?>
