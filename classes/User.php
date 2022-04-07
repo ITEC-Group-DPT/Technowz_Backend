@@ -137,7 +137,7 @@ class User
         } else return false;
     }
 
-    public function getLeaderBoardData($limit = null)
+    public function getLeaderBoardData($limit = null,$sortby='month')
     {
         $str = ($limit != null) ? " LIMIT {$limit} ": "";
         $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC {$str} ");

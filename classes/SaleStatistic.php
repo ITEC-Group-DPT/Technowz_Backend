@@ -10,7 +10,7 @@ class Statistic
 
     public function getSaleInTime($currentInterval)
     {
-        $stmt = $this->conn->prepare("SELECT count(orderID) count from orders WHERE (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and orders.dateCreated >= {$currentInterval}");
+        $stmt = $this->conn->prepare("SELECT count(orders.orderID) count FROM orders where orders.dateCreated >= {$currentInterval}");
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_all(MYSQLI_ASSOC);
@@ -19,7 +19,7 @@ class Statistic
 
     public function getItemOnSale($currentInterval)
     {
-        $stmt = $this->conn->prepare("SELECT count(DISTINCT(orderdetails.productID)) count from orders, orderdetails WHERE (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}");
+        $stmt = $this->conn->prepare("SELECT count(DISTINCT(orderdetails.productID)) count from orders, orderdetails where orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}");
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_all(MYSQLI_ASSOC);
@@ -28,7 +28,7 @@ class Statistic
     public function getTopRevenue($currentInterval)
     {
         $stmt = $this->conn->prepare("SELECT products.productID, (SELECT productimage.img1 FROM productimage where productimage.productID = products.productID) productimg, products.name, products.price, ifnull(sum(orderdetails.quantity) * products.price,0) as revenue 
-        FROM products LEFT JOIN (orderdetails inner JOIN orders on (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}) on products.productID = orderdetails.productID GROUP by products.productID, products.name, products.price ORDER by revenue DESC LIMIT 5;");
+        FROM products LEFT JOIN (orderdetails inner JOIN orders on  orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}) on products.productID = orderdetails.productID GROUP by products.productID, products.name, products.price ORDER by revenue DESC LIMIT 5;");
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_all(MYSQLI_ASSOC);
@@ -37,8 +37,8 @@ class Statistic
 
     public function getBestSeller($currentInterval, $previousInterval)
     {
-        $stmt = $this->conn->prepare("SELECT products.productID,(SELECT productimage.img1 FROM productimage where productimage.productID = products.productID) productimg, products.name, products.price, ifnull(sum(orderdetails.quantity),0) unit, IFNULL(((sum(orderdetails.quantity)) - (SELECT sum(od.quantity) FROM orderdetails od, orders where (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and orders.orderID = od.orderID and orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and od.productID = orderdetails.productID)) / (SELECT  sum(od.quantity) FROM orderdetails od, orders where (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and orders.orderID = od.orderID and orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and od.productID = orderdetails.productID) * 100,0) as up 
-        FROM products LEFT JOIN (orderdetails inner JOIN orders on (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}) on products.productID = orderdetails.productID GROUP by products.productID, products.name, products.price ORDER by unit DESC limit 1;
+        $stmt = $this->conn->prepare("SELECT products.productID,(SELECT productimage.img1 FROM productimage where productimage.productID = products.productID) productimg, products.name, products.price, ifnull(sum(orderdetails.quantity),0) unit, IFNULL(((sum(orderdetails.quantity)) - (SELECT sum(od.quantity) FROM orderdetails od, orders where  orders.orderID = od.orderID and orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and od.productID = orderdetails.productID)) / (SELECT  sum(od.quantity) FROM orderdetails od, orders where  orders.orderID = od.orderID and orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and od.productID = orderdetails.productID) * 100,0) as up 
+        FROM products LEFT JOIN (orderdetails inner JOIN orders on  orders.orderID = orderdetails.orderID and orders.dateCreated >= {$currentInterval}) on products.productID = orderdetails.productID GROUP by products.productID, products.name, products.price ORDER by unit DESC limit 1;
         ");
         $stmt->execute();
         $result = $stmt->get_result();
@@ -57,8 +57,8 @@ class Statistic
     {
         $stmt = $this->conn->prepare("SELECT p.type, IFNULL(total,0) total, dense_rank() OVER ( ORDER BY total DESC ) AS rank, ((
             select DISTINCT(rank) from (
-                SELECT p.type, IFNULL(total,0) total, dense_rank() OVER ( ORDER BY total DESC ) AS rank FROM products p LEFT JOIN (SELECT products.type type, sum(products.price) total FROM orders, orderdetails, products WHERE (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and orders.orderID = orderdetails.orderID and products.productID = orderdetails.productID GROUP by products.type ORDER BY `total` DESC) a on p.type = a.type) pa where pa.type = p.type) - dense_rank() OVER ( ORDER BY total DESC )) as up     
-        FROM products p LEFT JOIN (SELECT products.type type, sum(products.price) total FROM orders, orderdetails, products WHERE (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and orders.dateCreated >= {$currentInterval} and orders.orderID = orderdetails.orderID and products.productID = orderdetails.productID GROUP by products.type ORDER BY `total` DESC) a on p.type = a.type GROUP BY p.type ORDER BY  rank limit 5; ");
+                SELECT p.type, IFNULL(total,0) total, dense_rank() OVER ( ORDER BY total DESC ) AS rank FROM products p LEFT JOIN (SELECT products.type type, sum(products.price) total FROM orders, orderdetails, products WHERE  orders.dateCreated >= {$previousInterval} and orders.dateCreated < {$currentInterval} and orders.orderID = orderdetails.orderID and products.productID = orderdetails.productID GROUP by products.type ORDER BY `total` DESC) a on p.type = a.type) pa where pa.type = p.type) - dense_rank() OVER ( ORDER BY total DESC )) as up     
+        FROM products p LEFT JOIN (SELECT products.type type, sum(products.price) total FROM orders, orderdetails, products WHERE  orders.dateCreated >= {$currentInterval} and orders.orderID = orderdetails.orderID and products.productID = orderdetails.productID GROUP by products.type ORDER BY `total` DESC) a on p.type = a.type GROUP BY p.type ORDER BY  rank limit 5; ");
         $stmt->execute();
         $result = $stmt->get_result();
         $row = $result->fetch_all(MYSQLI_ASSOC);
@@ -77,11 +77,11 @@ class Statistic
             $defaultcol = $defaultcol - 1;
             $date = "DATE(now() - INTERVAL {$defaultcol} {$sortby})";
             if ($sortby == 'day')
-                $stmt = $this->conn->prepare("select DATE_FORMAT({$date}, '%d/%m')  month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders WHERE (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and date(orders.dateCreated) = {$date};");
+                $stmt = $this->conn->prepare("select DATE_FORMAT({$date}, '%d/%m')  month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders , orderstatus where orderstatus.orderID = orders.orderID and orderstatus.statusID = 4 and  date(orderstatus.updateDate) = {$date};");
             elseif ($sortby == 'month')
-                $stmt = $this->conn->prepare("select LEFT(monthname({$date}),3) month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders WHERE (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and {$sortby}(orders.dateCreated) = {$sortby}({$date}) and year(orders.dateCreated) = year({$date});");
+                $stmt = $this->conn->prepare("select LEFT(monthname({$date}),3) month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders , orderstatus where orderstatus.orderID = orders.orderID and orderstatus.statusID = 4 and  {$sortby}(orderstatus.updateDate) = {$sortby}({$date}) and year(orderstatus.updateDate) = year({$date});");
             elseif ($sortby == 'year')
-                $stmt = $this->conn->prepare("select year({$date}) month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders WHERE (SELECT count(*) FROM orderstatus WHERE orders.orderID = orderstatus.orderID AND statusID = 4) = 1 and {$sortby}(orders.dateCreated) = {$sortby}({$date});");
+                $stmt = $this->conn->prepare("select year({$date}) month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders , orderstatus where orderstatus.orderID = orders.orderID and orderstatus.statusID = 4 and  {$sortby}(orderstatus.updateDate) = {$sortby}({$date});");
             $stmt->execute();
             $result = $stmt->get_result();
             array_push($res, $result->fetch_all(MYSQLI_ASSOC)[0]);
