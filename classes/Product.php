@@ -114,6 +114,14 @@ class Product
         else return false;
     }
 
+    public function getProductComment(){
+        $stmt = $this->conn->prepare("SELECT comment from orderdetails where productID = ?");
+        $stmt->bind_param("i", $this->productID);
+        $stmt->execute();
+        $results = $stmt->get_result();
+        return $results->fetch_all(MYSQLI_ASSOC);
+    }
+
     //static
     public static function getTotalCategory($conn, $type)
     {
@@ -166,6 +174,48 @@ class Product
                                 from products p, productimage pimg
                                 where p.productID = pimg.productID and p.name like ? limit ?");
         $stmt->bind_param("si", $value, $limit);
+        $stmt->execute();
+        $results = $stmt->get_result();
+        return $results->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public static function getTotalNumberOfProductAdmin($conn){
+        $stmt = $conn->prepare("SELECT DISTINCT COUNT(p.productID)
+                                from products p, productimage img
+                                where p.productID = img.productID");
+        $stmt->execute();
+        $results = $stmt->get_result();
+        return $results->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public static function getNumberOfProductByCategoryAdmin($conn, $type){
+        $stmt = $conn->prepare("SELECT DISTINCT COUNT(p.productID)
+                                from products p, productimage img
+                                where p.type = ? and p.productID = img.productID");
+        $stmt->bind_param("s", $type);
+        $stmt->execute();
+        $results = $stmt->get_result();
+        return $results->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public static function getAllProductByPageAdmin($conn, $offset, $limit = 6){
+        $stmt = $conn->prepare("SELECT *
+                            from products p, productimage img
+                            where p.productID = img.productID
+                            limit ?, ?");
+        $stmt->bind_param("ii", $offset, $limit);
+        $stmt->execute();
+        $results = $stmt->get_result();
+        return $results->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public static function getProductByCategoryAdmin($conn, $type, $offset, $limit = 6)
+    {
+        $stmt = $conn->prepare("SELECT p.productID, p.name, pimg.img1, pimg.img2, pimg.img3, pimg.img4, p.rating, p.sold, p.price
+                                from products p, productimage pimg
+                                where p.type = ? and p.productID = pimg.productID
+                                limit ?, ?");
+        $stmt->bind_param("sii", $type, $offset, $limit);
         $stmt->execute();
         $results = $stmt->get_result();
         return $results->fetch_all(MYSQLI_ASSOC);

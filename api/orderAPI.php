@@ -33,6 +33,14 @@
                 }
                 else failApi("Can not rate this product");
             }
+            else if ($_POST['command'] == 'commentProduct'){
+                $productID = $_POST['productID'];
+                $comment = $_POST['comment'];
+                if($order->commentProduct($_POST['orderID'], $productID, $comment)){
+                    successApi("Comment successfully");
+                }
+                else failApi("Can not comment this product");
+            }
             else failApi('No command found');
         }
         else if (isset($_GET['command'])){

@@ -10,22 +10,24 @@ class Order
 
     public function createOrder($userID, $name, $address, $phone, $totalPrice, $productList, $date = null)
     {
-        if ($date == null) {
+        if ($date == null)
+        {
             $stmt = $this->conn->prepare('INSERT into orders (userID, name, address, phone, totalPrice) values (?,?,?,?,?)');
 
             $stmt->bind_param('isssi', $userID, $name, $address, $phone, $totalPrice);
         }
-        else {
+        else
+        {
             $stmt = $this->conn->prepare('INSERT into orders (userID, name, address, phone, totalPrice, dateCreated) values (?,?,?,?,?,?)');
 
             $stmt->bind_param('isssis', $userID, $name, $address, $phone, $totalPrice, $date);
-
         }
 
         $stmt->execute();
         $orderID = $this->conn->insert_id;
 
-        foreach ($productList as $product) {
+        foreach ($productList as $product)
+        {
             $stmt1 = $this->conn->prepare('INSERT into orderdetails (orderID, productID, quantity, price) values (?,?,?,?)');
 
             $stmt1->bind_param('ssss', $orderID, $product[0], $product[1], $product[2]);
@@ -76,11 +78,15 @@ class Order
         $result = $stmt->get_result();
         $row = $result->fetch_all(MYSQLI_ASSOC);
         $ords = [];
-        foreach ($row as $item) {
-            if ($offset > 0) {
+        foreach ($row as $item)
+        {
+            if ($offset > 0)
+            {
                 $offset--;
                 continue;
-            } elseif (count($ords) == $limit) {
+            }
+            elseif (count($ords) == $limit)
+            {
                 break;
             }
             $orderID = $item['orderID'];
@@ -103,7 +109,7 @@ class Order
     {
         $stmt = $this->conn->prepare("SELECT p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold, ordz.rating as 'customerRating'
                                             from orders o, orderdetails ordz, products p, productimage i
-                                            where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID 
+                                            where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID
                                                     and ordz.productID = p.productID and p.productID = i.productID");
         $stmt->bind_param("ii", $orderID, $userID);
         $stmt->execute();
@@ -132,6 +138,17 @@ class Order
                                         set rating = ? 
                                         where orderID = ? and productID = ?");
         $stmt->bind_param("dii", $rating, $orderID, $productID);
+        $stmt->execute();
+        if ($stmt->affected_rows == 1) return true;
+        else return false;
+    }
+
+    public function commentProduct($orderID, $productID, $comment)
+    {
+        $stmt = $this->conn->prepare("UPDATE orderdetails
+                                        set comment = ? 
+                                        where orderID = ? and productID = ?");
+        $stmt->bind_param("sii", $comment, $orderID, $productID);
         $stmt->execute();
         if ($stmt->affected_rows == 1) return true;
         else return false;
