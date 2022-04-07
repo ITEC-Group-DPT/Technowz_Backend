@@ -29,16 +29,22 @@ class Statistic
 
     public function getTotalOrderData()
     {
-        $stmt = $this->conn->prepare("SELECT COUNT(orderID) as 'totalOrders', 
-        SUM(totalPrice) as 'totalSales' 
+        $stmt = $this->conn->prepare("SELECT COUNT(orderID) as 'totalOrders'
         FROM orders");
 
         $stmt->execute();
-
         $result = $stmt->get_result();
 
-        if ($result->num_rows != 0)
-            return $result->fetch_assoc();
+        $stmt2 = $this->conn->prepare("SELECT SUM(totalPrice) as 'totalSales' 
+        FROM orders, orderstatus
+        WHERE orders.orderID = orderstatus.orderID AND orderstatus.statusID = 4");
+
+        $stmt2->execute();
+
+        $resultB = $stmt2->get_result();
+
+        if ($result->num_rows != 0 && $resultB->num_rows != 0)
+            return $result->fetch_assoc() + $resultB->fetch_assoc();
     }
 
     public function getOrderDataByTime($filter)
@@ -63,8 +69,8 @@ class Statistic
         $stmt = $this->conn->prepare(
             "SELECT COUNT(DISTINCT orders.orderID) as 'curOrders', SUM(price * quantity) as 'curSales', SUM(quantity) as 'curItems' 
         FROM orders, orderdetails, orderstatus 
-        WHERE $where_clauseA" . " AND orders.orderID = orderdetails.orderID" . 
-        " AND orders.orderID = orderstatus.orderID AND orderstatus.statusID = 4"
+        WHERE $where_clauseA" . " AND orders.orderID = orderdetails.orderID" .
+                " AND orders.orderID = orderstatus.orderID AND orderstatus.statusID = 4"
         );
 
 
@@ -77,7 +83,7 @@ class Statistic
         $stmt2 = $this->conn->prepare("SELECT COUNT(DISTINCT orders.orderID) as 'pastOrders', SUM(price * quantity) as 'pastSales', SUM(quantity) as 'pastItems' 
         FROM orders, orderdetails, orderstatus 
         WHERE $where_clauseB" . " AND orders.orderID = orderdetails.orderID" .
-        " AND orders.orderID = orderstatus.orderID AND orderstatus.statusID = 4");
+            " AND orders.orderID = orderstatus.orderID AND orderstatus.statusID = 4");
 
 
         $stmt2->execute();
