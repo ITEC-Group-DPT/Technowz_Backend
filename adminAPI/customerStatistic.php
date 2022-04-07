@@ -11,7 +11,7 @@ if (isset($_GET['command']))
         if (isset($_GET['each']))
         {
             $limit = isset($_GET['limit']) ? $_GET['limit'] : null;
-            $res = $user->getLeaderBoardData($limit);
+            $res = $user->getLeaderBoardData($limit,$_GET['each']);
             if ($res['isSuccess'])
             {
                 successApi($res['data']);
