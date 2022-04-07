@@ -32,7 +32,6 @@
                     $arr['userRole'] = $row['userRole'];
                     $res['isSuccess'] = true;
                     $res['data'] = $arr;
-                    // $this->recordSignIn($row['userID']);
                 }
                 else $res['data']['errorPassword'] = "Password is incorrect";
             }
