@@ -109,7 +109,7 @@ class Order
     {
         $stmt = $this->conn->prepare("SELECT p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold, ordz.rating as 'customerRating'
                                             from orders o, orderdetails ordz, products p, productimage i
-                                            where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID 
+                                            where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID
                                                     and ordz.productID = p.productID and p.productID = i.productID");
         $stmt->bind_param("ii", $orderID, $userID);
         $stmt->execute();
@@ -138,6 +138,17 @@ class Order
                                         set rating = ? 
                                         where orderID = ? and productID = ?");
         $stmt->bind_param("dii", $rating, $orderID, $productID);
+        $stmt->execute();
+        if ($stmt->affected_rows == 1) return true;
+        else return false;
+    }
+
+    public function commentProduct($orderID, $productID, $comment)
+    {
+        $stmt = $this->conn->prepare("UPDATE orderdetails
+                                        set comment = ? 
+                                        where orderID = ? and productID = ?");
+        $stmt->bind_param("sii", $comment, $orderID, $productID);
         $stmt->execute();
         if ($stmt->affected_rows == 1) return true;
         else return false;

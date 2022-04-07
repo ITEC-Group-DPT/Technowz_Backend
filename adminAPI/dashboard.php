@@ -19,52 +19,43 @@
 
         if ($pastData == 0) return 1;
 
-        $res = ($curData - $pastData)/ $pastData;
+        $res = ($curData - $pastData) / $pastData;
         $format = number_format((float)$res, 2, '.', '');
 
         return $format;
     }
 
-    if (isset($header['Userid'])) {
+    if (isset($_GET['command']) == null) failApi("Invalid request");
 
-        $userID = $header['Userid'];
-        $isAdmin = $user->verifyAdmin($userID);
+    $command = $_GET['command'];
 
-        if ($isAdmin == false) failApi("Access-Control Denied");
+    if ($command == "getOverallStatistic") {
 
-        if (isset($_GET['command']) == null) failApi("Invalid request");
-
-        $command = $_GET['command'];
-
-        if ($command == "getOverallStatistic") {
-
-            $orderData = $statistic->getTotalOrderData();
-            $userData = $statistic->getTotalAccountNum();
-            
-
-            $summaryData = $orderData + $userData;
-            successApi($summaryData);
-        }
-
-        if ($command == "getDashboardDataByTime") {
-            
-            if (!isset($_GET['filter'])) failApi("Invalid request");
-
-            $filter = $_GET['filter'];
-
-            $orderData = $statistic->getOrderDataByTime($filter);
-            $visitData = $statistic->getVisitByTime($filter);
+        $orderData = $statistic->getTotalOrderData();
+        $userData = $statistic->getTotalAccountNum();
 
 
-            $finalData = $orderData;
-            $finalData['customer'] = $visitData;
-            
-            foreach ($finalData as $key => $value) {
-                $finalData[$key]['percent'] = calculateDiffPercent($value); 
-            }
-
-            successApi($finalData);
-        }
-
+        $summaryData = $orderData + $userData;
+        successApi($summaryData);
     }
-    failApi("Access-Control Denied");
+
+    if ($command == "getDashboardDataByTime") {
+
+        if (!isset($_GET['filter'])) failApi("Invalid request");
+
+        $filter = $_GET['filter'];
+
+        $orderData = $statistic->getOrderDataByTime($filter);
+        $visitData = $statistic->getVisitByTime($filter);
+
+
+        $finalData = $orderData;
+        $finalData['customer'] = $visitData;
+
+        foreach ($finalData as $key => $value) {
+            $finalData[$key]['percent'] = calculateDiffPercent($value);
+        }
+
+        successApi($finalData);
+    }
+?>
