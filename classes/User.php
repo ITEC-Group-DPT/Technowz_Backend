@@ -143,15 +143,15 @@ class User
         if($time == 'month'){
             $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID
             WHERE MONTH(o.dateCreated) = MONTH(NOW()) AND YEAR(o.dateCreated) = YEAR(NOW())
-            GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC {$limit}");
+            GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC {$str}");
         }else if($time == 'year'){
             $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID
             WHERE YEAR(o.dateCreated) = YEAR(NOW())
-            GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC  {$limit}");
+            GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC  {$str}");
         }else if($time == 'day'){
             $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID
             WHERE DATE(o.dateCreated) = DATE(NOW())
-            GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC  {$limit}");
+            GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC  {$str}");
         }
         $stmt->execute();
         $result = $stmt->get_result();
