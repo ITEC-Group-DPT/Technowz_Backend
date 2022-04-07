@@ -137,9 +137,10 @@ class User
         } else return false;
     }
 
-    public function getLeaderBoardData()
+    public function getLeaderBoardData($limit = null)
     {
-        $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC");
+        $limit = ($limit != null) ? "limit {$limit}": "";
+        $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC {$limit}");
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows != 0) {

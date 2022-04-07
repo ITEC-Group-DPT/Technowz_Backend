@@ -6,7 +6,8 @@
     $header = getallheaders();
     if(isset($_GET['command'])){
         if($_GET['command'] == 'getLeaderboardData'){
-            if($user->getLeaderboardData()){
+            $limit = isset($_GET['limit']) ? $_GET['limit'] : null;
+            if($user->getLeaderboardData($limit)){
                 $res = $user->getLeaderBoardData();
                 if($res['isSuccess']){
                     successApi($res['data']);
