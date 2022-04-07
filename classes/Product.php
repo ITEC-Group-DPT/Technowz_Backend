@@ -179,10 +179,43 @@ class Product
         return $results->fetch_all(MYSQLI_ASSOC);
     }
 
-    public static function getAllProduct($conn){
+    public static function getTotalNumberOfProductAdmin($conn){
+        $stmt = $conn->prepare("SELECT DISTINCT COUNT(p.productID)
+                                from products p, productimage img
+                                where p.productID = img.productID");
+        $stmt->execute();
+        $results = $stmt->get_result();
+        return $results->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public static function getNumberOfProductByCategoryAdmin($conn, $type){
+        $stmt = $conn->prepare("SELECT DISTINCT COUNT(p.productID)
+                                from products p, productimage img
+                                where p.type = ? and p.productID = img.productID");
+        $stmt->bind_param("s", $type);
+        $stmt->execute();
+        $results = $stmt->get_result();
+        return $results->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public static function getAllProductByPageAdmin($conn, $offset, $limit = 6){
         $stmt = $conn->prepare("SELECT *
                             from products p, productimage img
-                            where p.productID = img.productID");
+                            where p.productID = img.productID
+                            limit ?, ?");
+        $stmt->bind_param("ii", $offset, $limit);
+        $stmt->execute();
+        $results = $stmt->get_result();
+        return $results->fetch_all(MYSQLI_ASSOC);
+    }
+
+    public static function getProductByCategoryAdmin($conn, $type, $offset, $limit = 6)
+    {
+        $stmt = $conn->prepare("SELECT p.productID, p.name, pimg.img1, pimg.img2, pimg.img3, pimg.img4, p.rating, p.sold, p.price
+                                from products p, productimage pimg
+                                where p.type = ? and p.productID = pimg.productID
+                                limit ?, ?");
+        $stmt->bind_param("sii", $type, $offset, $limit);
         $stmt->execute();
         $results = $stmt->get_result();
         return $results->fetch_all(MYSQLI_ASSOC);

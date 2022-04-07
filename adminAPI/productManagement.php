@@ -4,8 +4,27 @@
 
     $header = getallheaders();
     if (isset($_GET['command'])) {
-        if ($_GET['command'] == 'getAllProduct') {
-            $data = Product::getAllProduct($conn);
+        $productID = (isset($_GET['productID'])) ? $_GET['productID'] : '';
+        $product = new Product($conn, $productID);
+
+        if ($_GET['command'] == 'getTotalNumberOfProductAdmin') {
+            $data = Product::getTotalNumberOfProductAdmin($conn);
+            successApi($data);
+        }
+        else if ($_GET['command'] == 'getNumberOfProductByCategoryAdmin') {
+            $type = $_GET['type'];
+            $data = Product::getNumberOfProductByCategoryAdmin($conn, $type);
+            successApi($data);
+        }
+        else if ($_GET['command'] == 'getAllProductByPageAdmin') {
+            $offset = $_GET['page'] * 6;
+            $data = Product::getAllProductByPageAdmin($conn, $offset);
+            successApi($data);
+        }
+        else if ($_GET['command'] == 'getProductByCategoryAdmin') {
+            $type = $_GET['type'];
+            $offset = $_GET['page'] * 6;
+            $data = Product::getProductByCategoryAdmin($conn, $type, $offset);
             successApi($data);
         }
         else failApi("No command found!");
