@@ -154,7 +154,7 @@
             return $results->fetch_all(MYSQLI_ASSOC);
         }
 
-        public function getOrderByOption($searchVal = "", $sortByStatus = "All", $getTotalOrder = true, $offset = 0, $limit = 10){
+        public function getOrderByOption($searchVal = "", $sortByStatus = "All", $getTotalOrder = true, $offset = 0, $limit = 5){
             $result = [];
 
             $decryptedSearch = $this->decrypt($searchVal);
