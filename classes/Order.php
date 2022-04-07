@@ -10,22 +10,24 @@ class Order
 
     public function createOrder($userID, $name, $address, $phone, $totalPrice, $productList, $date = null)
     {
-        if ($date == null) {
+        if ($date == null)
+        {
             $stmt = $this->conn->prepare('INSERT into orders (userID, name, address, phone, totalPrice) values (?,?,?,?,?)');
 
             $stmt->bind_param('isssi', $userID, $name, $address, $phone, $totalPrice);
         }
-        else {
+        else
+        {
             $stmt = $this->conn->prepare('INSERT into orders (userID, name, address, phone, totalPrice, dateCreated) values (?,?,?,?,?,?)');
 
             $stmt->bind_param('isssis', $userID, $name, $address, $phone, $totalPrice, $date);
-
         }
 
         $stmt->execute();
         $orderID = $this->conn->insert_id;
 
-        foreach ($productList as $product) {
+        foreach ($productList as $product)
+        {
             $stmt1 = $this->conn->prepare('INSERT into orderdetails (orderID, productID, quantity, price) values (?,?,?,?)');
 
             $stmt1->bind_param('ssss', $orderID, $product[0], $product[1], $product[2]);
@@ -76,11 +78,15 @@ class Order
         $result = $stmt->get_result();
         $row = $result->fetch_all(MYSQLI_ASSOC);
         $ords = [];
-        foreach ($row as $item) {
-            if ($offset > 0) {
+        foreach ($row as $item)
+        {
+            if ($offset > 0)
+            {
                 $offset--;
                 continue;
-            } elseif (count($ords) == $limit) {
+            }
+            elseif (count($ords) == $limit)
+            {
                 break;
             }
             $orderID = $item['orderID'];
