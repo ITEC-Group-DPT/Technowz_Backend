@@ -14,7 +14,8 @@
             $product = new Product($conn, $productID);
             $arr = [];
             $arr['product'] = $product->getProduct();
-
+            $arr['comment'] = $product->getProductComment();
+            
             if(isset($userID)){
                 $favorite = new Favorite($conn, $userID);
                 $arr['favorite'] = $favorite->checkFavorite($productID);
