@@ -29,7 +29,7 @@ if (isset($_GET['command']))
         $arr['mostProfitableCate'] = $sts->getMostProfitableCate($currentInterval, $previousInterval);
         $arr['incomeByTime'] = $sts->getIncomeLineChart($sortby);
         $user = new User($conn);
-        $arr['topCustomer'] = $user->getLeaderBoardData(5,$sortby);
+        $arr['topCustomer'] = $user->getLeaderBoardData(5,$sortby)["data"];
         successApi($arr);
         // successApi(date("Y-m-d H:i:s"));
         // 2021-07-30 09:13:51
