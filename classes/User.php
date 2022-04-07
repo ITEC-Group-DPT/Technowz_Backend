@@ -139,8 +139,8 @@ class User
 
     public function getLeaderBoardData($limit = null)
     {
-        $limit = ($limit != null) ? "limit {$limit}": "";
-        $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC {$limit}");
+        $str = ($limit != null) ? " LIMIT {$limit} ": "";
+        $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC {$str} ");
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows != 0) {
@@ -159,7 +159,7 @@ class User
         $arr['isSuccess'] = true;
         $arr['data']['active'] = $activeData['data'];
         $arr['data']['visited'] = $visitedData['data'];
-        return json_encode($arr);
+        return $arr;
     }
     public function getUser($type, $data)
     {
