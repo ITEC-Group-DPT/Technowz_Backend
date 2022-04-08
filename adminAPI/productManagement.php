@@ -1,30 +1,30 @@
 <?php
     include '../api/apiheader.php';
+    include '../classes/ProductStatistic.php';
     include '../classes/Product.php';
 
     $header = getallheaders();
     if (isset($_GET['command'])) {
-        $productID = (isset($_GET['productID'])) ? $_GET['productID'] : '';
-        $product = new Product($conn, $productID);
+        $product = new ProductStatistic($conn);
 
         if ($_GET['command'] == 'getTotalNumberOfProductAdmin') {
-            $data = Product::getTotalNumberOfProductAdmin($conn);
+            $data = $product->getTotalNumberOfProductAdmin();
             successApi($data);
         }
         else if ($_GET['command'] == 'getNumberOfProductByCategoryAdmin') {
             $type = $_GET['type'];
-            $data = Product::getNumberOfProductByCategoryAdmin($conn, $type);
+            $data = $product->getNumberOfProductByCategoryAdmin($type);
             successApi($data);
         }
         else if ($_GET['command'] == 'getAllProductByPageAdmin') {
             $offset = $_GET['page'] * 6;
-            $data = Product::getAllProductByPageAdmin($conn, $offset);
+            $data = $product->getAllProductByPageAdmin($offset);
             successApi($data);
         }
         else if ($_GET['command'] == 'getProductByCategoryAdmin') {
             $type = $_GET['type'];
             $offset = $_GET['page'] * 6;
-            $data = Product::getProductByCategoryAdmin($conn, $type, $offset);
+            $data = $product->getProductByCategoryAdmin($type, $offset);
             successApi($data);
         }
         else failApi("No command found!");
