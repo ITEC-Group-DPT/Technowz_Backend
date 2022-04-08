@@ -89,6 +89,8 @@ class User
 
     public function getVisitedUsers($time)
     {
+        $time = strtolower($time);
+
         if ($time == 'month')
         {
             $stmt = $this->conn->prepare("SELECT MONTH(time) AS month, COUNT(time) AS guests FROM uservisit WHERE MONTH(time) >= MONTH(NOW() - INTERVAL 3 MONTH) AND MONTH(time) <= MONTH(NOW()) AND userID = -1 GROUP BY MONTH(time) ORDER BY MONTH(time) ASC");
@@ -124,6 +126,8 @@ class User
 
     public function getActiveUsers($time)
     {
+        $time = strtolower($time);
+
         if ($time == 'month')
         {
             $stmt = $this->conn->prepare("SELECT T.months AS month, COALESCE(X.users,0) AS users
@@ -165,6 +169,7 @@ class User
 
     public function getLeaderBoardData($limit = null, $time = 'month')
     {
+        $time = strtolower($time);
         $str = ($limit != null) ? " LIMIT {$limit} " : "";
         if ($time == 'month')
         {

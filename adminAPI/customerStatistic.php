@@ -18,7 +18,7 @@ if (isset($_GET['command']))
             }
             else
             {
-                failApi("isLoading");
+                failApi("An error has occcured");
             }
         }
     }
@@ -33,7 +33,7 @@ if (isset($_GET['command']))
             }
             else
             {
-                failApi("isLoading");
+                failApi("An error has occcured");
             }
         }
     }
@@ -48,7 +48,7 @@ if (isset($_GET['command']))
             }
             else
             {
-                failApi("isLoading");
+                failApi("An error has occcured");
             }
         }
     }
@@ -63,7 +63,7 @@ if (isset($_GET['command']))
             }
             else
             {
-                failApi("isLoading");
+                failApi("An error has occcured");
             }
         }
     }
