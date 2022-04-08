@@ -8,23 +8,31 @@
         $product = new ProductStatistic($conn);
 
         if ($_GET['command'] == 'getTotalNumberOfProductAdmin') {
-            $data = $product->getTotalNumberOfProductAdmin();
+            $value = '%' . $_GET['value'] . '%';
+            $data = $product->getTotalNumberOfProductAdmin($value);
             successApi($data);
         }
         else if ($_GET['command'] == 'getNumberOfProductByCategoryAdmin') {
-            $type = $_GET['type'];
-            $data = $product->getNumberOfProductByCategoryAdmin($type);
+            $type = '%' . $_GET['type'] . '%';
+            $value = '%' . $_GET['value'] . '%';
+            $data = $product->getNumberOfProductByCategoryAdmin($type, $value);
             successApi($data);
         }
         else if ($_GET['command'] == 'getAllProductByPageAdmin') {
-            $offset = $_GET['page'] * 6;
-            $data = $product->getAllProductByPageAdmin($offset);
+            $offset =  ($_GET['page'] - 1) * 6;
+            $value = '%' . $_GET['value'] . '%';
+            $orderBy = $_GET['orderBy'];
+            $order = $_GET['order'];
+            $data = $product->getAllProductByPageAdmin($offset, 6, $value, $orderBy, $order);
             successApi($data);
         }
         else if ($_GET['command'] == 'getProductByCategoryAdmin') {
-            $type = $_GET['type'];
-            $offset = $_GET['page'] * 6;
-            $data = $product->getProductByCategoryAdmin($type, $offset);
+            $type = '%' .$_GET['type'] . '%';
+            $offset =  ($_GET['page'] - 1) * 6;
+            $value = '%' . $_GET['value'] . '%';
+            $orderBy = $_GET['orderBy'];
+            $order = $_GET['order'];
+            $data = $product->getProductByCategoryAdmin($type, $offset, 6, $value,  $orderBy, $order);
             successApi($data);
         }
         else failApi("No command found!");
