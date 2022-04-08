@@ -9,8 +9,7 @@
 
         public function getTotalNumberOfProductAdmin(){
             $stmt = $this->conn->prepare("SELECT DISTINCT COUNT(p.productID)
-                                    from products p, productimage img
-                                    where p.productID = img.productID");
+                                    from products p");
             $stmt->execute();
             $results = $stmt->get_result();
             return $results->fetch_all(MYSQLI_ASSOC);
@@ -18,8 +17,8 @@
     
         public function getNumberOfProductByCategoryAdmin($type){
             $stmt = $this->conn->prepare("SELECT DISTINCT COUNT(p.productID)
-                                    from products p, productimage img
-                                    where p.type = ? and p.productID = img.productID");
+                                    from products p
+                                    where p.type = ?");
             $stmt->bind_param("s", $type);
             $stmt->execute();
             $results = $stmt->get_result();
@@ -39,7 +38,7 @@
     
         public function getProductByCategoryAdmin($type, $offset, $limit = 6)
         {
-            $stmt = $this->conn->prepare("SELECT p.productID, p.name, pimg.img1, pimg.img2, pimg.img3, pimg.img4, p.rating, p.sold, p.price
+            $stmt = $this->conn->prepare("SELECT *
                                     from products p, productimage pimg
                                     where p.type = ? and p.productID = pimg.productID
                                     limit ?, ?");
