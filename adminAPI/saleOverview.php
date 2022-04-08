@@ -15,8 +15,23 @@ if (isset($_GET['command']))
     {
 
         $sortby = isset($_GET['sortby']) ? $_GET['sortby'] : 'month';
-        $currentInterval = "DATE(now() - INTERVAL 1 {$sortby})";
-        $previousInterval = "DATE(now() - INTERVAL 2 {$sortby})";
+        if ($sortby == 'day')
+        {
+            $currentInterval = "DATE(now() - INTERVAL 1 {$sortby})";
+            $previousInterval = "DATE(now() - INTERVAL 2 {$sortby})";
+        }
+        elseif ($sortby == 'month'){
+            $firstdayofmonth = date('Y-m-01');
+            $currentInterval = "DATE('{$firstdayofmonth}')";
+            $previousInterval = "DATE('{$firstdayofmonth}' - INTERVAL 1 {$sortby})";
+        }
+        elseif ($sortby == 'year'){
+            $firstdayofyear =  date('Y-01-01');
+            $currentInterval = "DATE('{$firstdayofyear}')";
+            $previousInterval = "DATE('{$firstdayofyear}' - INTERVAL 1 {$sortby})";
+        }
+        // $currentInterval = "DATE(now() - INTERVAL 1 {$sortby})";
+        // $previousInterval = "DATE(now() - INTERVAL 2 {$sortby})";
         // $currentInterval = "date('2021-07-01 00:00:00')";
         // $previousInterval = "date('2021-06-01 00:00:00')";
         $arr = [];
@@ -29,7 +44,7 @@ if (isset($_GET['command']))
         $arr['mostProfitableCate'] = $sts->getMostProfitableCate($currentInterval, $previousInterval);
         $arr['incomeByTime'] = $sts->getIncomeLineChart($sortby);
         $user = new User($conn);
-        $arr['topCustomer'] = $user->getLeaderBoardData(5)['data'];
+        $arr['topCustomer'] = $user->getLeaderBoardData(5, $sortby)["data"];
         successApi($arr);
         // successApi(date("Y-m-d H:i:s"));
         // 2021-07-30 09:13:51

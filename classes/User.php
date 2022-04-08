@@ -27,16 +27,19 @@ class User
         $res = [];
         $res['isSuccess'] = false;
 
-        if ($this->getUser("email", $email) != false) {
+        if ($this->getUser("email", $email) != false)
+        {
 
             $row = $this->getUser("email", $email);
 
 
-            if ($isAdmin && ($row['userRole'] == 1)) {
+            if ($isAdmin && ($row['userRole'] == 1))
+            {
                 $res['data']['errorEmail'] = "Email not found";
                 return $res;
             }
-            if (password_verify($password, $row['password'])) {
+            if (password_verify($password, $row['password']))
+            {
                 $arr = [];
                 $arr['userID'] = $row['userID'];
                 $arr['username'] = $row['username'];
@@ -137,18 +140,33 @@ class User
         } else return false;
     }
 
-    public function getLeaderBoardData($limit = null)
+    public function getLeaderBoardData($limit = null, $time = 'month')
     {
-        $str = ($limit != null) ? " LIMIT {$limit} ": "";
-        $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, sum(o.totalPrice) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC {$str} ");
+        $str = ($limit != null) ? " LIMIT {$limit} " : "";
+        if ($time == 'month')
+        {
+            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, ifnull(sum(o.totalPrice),0) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID
+            and MONTH(o.dateCreated) = MONTH(NOW()) AND YEAR(o.dateCreated) = YEAR(NOW())
+            GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC {$str}");
+        }
+        else if ($time == 'year')
+        {
+            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username,  ifnull(sum(o.totalPrice),0)  AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID
+            and YEAR(o.dateCreated) = YEAR(NOW())
+            GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC  {$str}");
+        }
+        else if ($time == 'day')
+        {
+            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, ifnull(sum(o.totalPrice),0)  AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID
+            and DATE(o.dateCreated) = DATE(NOW())
+            GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC  {$str}");
+        }
         $stmt->execute();
         $result = $stmt->get_result();
-        if ($result->num_rows != 0) {
-            $arr = [];
-            $arr['isSuccess'] = true;
-            $arr['data'] = $result->fetch_all(MYSQLI_ASSOC);
-            return $arr;
-        } else return false;
+
+        $arr['isSuccess'] = true;
+        $arr['data'] = $result->fetch_all(MYSQLI_ASSOC);
+        return $arr;
     }
 
     public function getChartsData($time)
