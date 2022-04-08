@@ -56,7 +56,7 @@ if (isset($_GET['command']))
     {
         if (isset($_GET['each']))
         {
-            $res = $user->getChartsData(isset($_GET['each']));
+            $res = $user->getChartsData($_GET['each']);
             if ($res["isSuccess"])
             {
                 successApi($res['data']);
