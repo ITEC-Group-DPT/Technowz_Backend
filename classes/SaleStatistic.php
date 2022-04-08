@@ -77,11 +77,11 @@ class Statistic
             $defaultcol = $defaultcol - 1;
             $date = "DATE(now() - INTERVAL {$defaultcol} {$sortby})";
             if ($sortby == 'day')
-                $stmt = $this->conn->prepare("select DATE_FORMAT({$date}, '%d/%m')  month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders , orderstatus where orderstatus.orderID = orders.orderID and orderstatus.statusID = 4 and  date(orderstatus.updateDate) = {$date};");
+                $stmt = $this->conn->prepare("select DATE_FORMAT({$date}, '%d/%m')  month, ifnull(sum(orders.totalPrice),0) income  FROM orders , orderstatus where orderstatus.orderID = orders.orderID and orderstatus.statusID = 4 and  date(orderstatus.updateDate) = {$date};");
             elseif ($sortby == 'month')
-                $stmt = $this->conn->prepare("select LEFT(monthname({$date}),3) month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders , orderstatus where orderstatus.orderID = orders.orderID and orderstatus.statusID = 4 and  {$sortby}(orderstatus.updateDate) = {$sortby}({$date}) and year(orderstatus.updateDate) = year({$date});");
+                $stmt = $this->conn->prepare("select LEFT(monthname({$date}),3) month, ifnull(sum(orders.totalPrice),0) income  FROM orders , orderstatus where orderstatus.orderID = orders.orderID and orderstatus.statusID = 4 and  {$sortby}(orderstatus.updateDate) = {$sortby}({$date}) and year(orderstatus.updateDate) = year({$date});");
             elseif ($sortby == 'year')
-                $stmt = $this->conn->prepare("select year({$date}) month, ifnull(sum(orders.totalPrice)/1000000,0) income  FROM orders , orderstatus where orderstatus.orderID = orders.orderID and orderstatus.statusID = 4 and  {$sortby}(orderstatus.updateDate) = {$sortby}({$date});");
+                $stmt = $this->conn->prepare("select year({$date}) month, ifnull(sum(orders.totalPrice),0) income  FROM orders , orderstatus where orderstatus.orderID = orders.orderID and orderstatus.statusID = 4 and  {$sortby}(orderstatus.updateDate) = {$sortby}({$date});");
             $stmt->execute();
             $result = $stmt->get_result();
             array_push($res, $result->fetch_all(MYSQLI_ASSOC)[0]);
