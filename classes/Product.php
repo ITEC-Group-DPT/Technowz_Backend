@@ -13,6 +13,7 @@ class Product
 
     public function getProduct()
     {
+
         $stmt = $this->conn->prepare("SELECT *
                                         from products p, productimage i
                                         where p.productID = ? and p.productID = i.productID");
@@ -20,7 +21,12 @@ class Product
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows == 1)
+        {
+            $stmt1 = $this->conn->prepare("INSERT INTO productview (productID) VALUES (?)");
+            $stmt1->bind_param("i", $this->productID);
+            $stmt1->execute();
             return $result->fetch_assoc();
+        }
         else return false;
     }
 
@@ -114,7 +120,8 @@ class Product
         else return false;
     }
 
-    public function getProductComment(){
+    public function getProductComment()
+    {
         $stmt = $this->conn->prepare("SELECT comment from orderdetails where productID = ?");
         $stmt->bind_param("i", $this->productID);
         $stmt->execute();

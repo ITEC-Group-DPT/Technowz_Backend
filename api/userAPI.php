@@ -28,7 +28,12 @@ else if (isset($_POST['command'])) {
     } else if ($_POST['command'] == 'signIn') {
         $email = $_POST['email'];
         $password = $_POST['password'];
-        $res = $user->checkSignIn($email, $password);
+
+        $isAdmin = false;
+
+        if (isset($_POST['isAdmin'])) $isAdmin = boolval($_POST['isAdmin']);
+
+        $res = $user->checkSignIn($email, $password, $isAdmin);
         if ($res['isSuccess'])
             successApi($res['data']);
         else
