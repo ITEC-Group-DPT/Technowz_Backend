@@ -18,7 +18,7 @@ if (isset($_GET['command']))
             }
             else
             {
-                failApi("isLoading");
+                failApi("An error has occcured");
             }
         }
     }
@@ -33,7 +33,7 @@ if (isset($_GET['command']))
             }
             else
             {
-                failApi("isLoading");
+                failApi("An error has occcured");
             }
         }
     }
@@ -48,7 +48,7 @@ if (isset($_GET['command']))
             }
             else
             {
-                failApi("isLoading");
+                failApi("An error has occcured");
             }
         }
     }
@@ -56,14 +56,14 @@ if (isset($_GET['command']))
     {
         if (isset($_GET['each']))
         {
-            $res = $user->getChartsData(isset($_GET['each']));
+            $res = $user->getChartsData($_GET['each']);
             if ($res["isSuccess"])
             {
                 successApi($res['data']);
             }
             else
             {
-                failApi("isLoading");
+                failApi("An error has occcured");
             }
         }
     }
