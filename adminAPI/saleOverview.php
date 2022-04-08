@@ -1,6 +1,6 @@
 <?php
 include '../api/apiheader.php';
-include '../classes/User.php';
+include '../classes/CustomerStatistic.php';
 include '../classes/SaleStatistic.php';
 
 $header = getallheaders();
@@ -43,8 +43,9 @@ if (isset($_GET['command']))
         $arr['mostViewed'] = $sts->getMostViewed($currentInterval, $previousInterval);
         $arr['mostProfitableCate'] = $sts->getMostProfitableCate($currentInterval, $previousInterval);
         $arr['incomeByTime'] = $sts->getIncomeLineChart($sortby);
-        $user = new User($conn);
-        $arr['topCustomer'] = $user->getLeaderBoardData(5, $sortby)["data"];
+
+        $customerStat = new CustomerStatistic($conn);
+        $arr['topCustomer'] = $customerStat->getLeaderBoardData(5, $sortby)["data"];
         successApi($arr);
         // successApi(date("Y-m-d H:i:s"));
         // 2021-07-30 09:13:51
