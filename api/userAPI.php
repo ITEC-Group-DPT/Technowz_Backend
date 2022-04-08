@@ -1,6 +1,10 @@
 <?php
 include './apiheader.php';
+
 include '../classes/User.php';
+include '../classes/CustomerStatistic.php';
+
+
 $user = new User($conn);
 
 if (isset($_GET['command'])) {
@@ -15,8 +19,7 @@ if (isset($_GET['command'])) {
         }
         failApi("validate user fail");
     }
-}
-else if (isset($_POST['command'])) {
+} else if (isset($_POST['command'])) {
     if ($_POST['command'] == 'signUp') {
         $email = $_POST['email'];
         $username = $_POST['username'];
@@ -38,5 +41,18 @@ else if (isset($_POST['command'])) {
             successApi($res['data']);
         else
             failApi($res['data']);
+    } else if ($_POST['command'] == 'updateVisit') {
+
+        $header = getallheaders();
+        $stat = new CustomerStatistic($conn);
+
+        $userID = isset($header['Userid']) ? $header['Userid'] : -1;
+
+        $success = $stat->updateUserVisit($userID);
+
+        $success
+            ? successApi("Update visit successfully")
+            : failApi("Update visit fail");
+            
     } else failApi("No command found!");
 } else failApi("No command found!");

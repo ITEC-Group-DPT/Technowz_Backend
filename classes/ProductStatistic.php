@@ -54,5 +54,15 @@
             $results = $stmt->get_result();
             return $results->fetch_all(MYSQLI_ASSOC);
         }
+
+        public function updateProductView($productID)
+        {
+			$stmt = $this->conn->prepare("INSERT INTO productview (productID) VALUES (?)");
+            $stmt->bind_param("i", $productID);
+
+            $stmt->execute();
+
+            return $stmt->affected_rows == 1;
+        }
     }
 ?>

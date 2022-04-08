@@ -114,5 +114,17 @@ class CustomerStatistic
         $arr['data']['visited'] = $visitedData['data'];
         return $arr;
     }
+
+
+    public function updateUserVisit($userID)
+    {
+        $stmt = $this->conn->prepare("INSERT INTO uservisit (userID) VALUES (?)");
+        $stmt->bind_param("i", $userID);
+
+
+        $stmt->execute();
+
+        return $stmt->affected_rows == 1;
+    }
 }
 ?>

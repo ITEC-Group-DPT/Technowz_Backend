@@ -91,19 +91,4 @@ class User
         if ($result->num_rows == 1) return $result->fetch_assoc();
         else return false;
     }
-
-
-    public function verifyAdmin($userID)
-    {
-        $stmt = $this->conn->prepare("SELECT userRole FROM users where userID = ?");
-        $stmt->bind_param("i", $userID);
-
-        $stmt->execute();
-
-        $result = $stmt->get_result();
-
-        $object = $result->fetch_assoc();
-
-        return $object['userRole'] == 0;
-    }
 }
