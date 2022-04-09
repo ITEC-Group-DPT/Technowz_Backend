@@ -22,9 +22,6 @@ class Product
         $result = $stmt->get_result();
         if ($result->num_rows == 1)
         {
-            $stmt1 = $this->conn->prepare("INSERT INTO productview (productID) VALUES (?)");
-            $stmt1->bind_param("i", $this->productID);
-            $stmt1->execute();
             return $result->fetch_assoc();
         }
         else return false;

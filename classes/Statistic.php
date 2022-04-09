@@ -50,19 +50,19 @@ class Statistic
     public function getOrderDataByTime($filter)
     {
 
-        $where_clauseA = "YEAR(dateCreated) = YEAR(CURDATE())";
-        $where_clauseB = "YEAR(dateCreated) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
+        $where_clauseA = "YEAR(updateDate) = YEAR(CURDATE())";
+        $where_clauseB = "YEAR(updateDate) = YEAR(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
 
         $filter = strtoupper($filter);
 
 
         if ($filter == "MONTH" || $filter == "DAY") {
-            $where_clauseA .= " AND MONTH(dateCreated) = MONTH(CURDATE())";
-            $where_clauseB .= " AND MONTH(dateCreated) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
+            $where_clauseA .= " AND MONTH(updateDate) = MONTH(CURDATE())";
+            $where_clauseB .= " AND MONTH(updateDate) = MONTH(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
         }
         if ($filter == "DAY") {
-            $where_clauseA .= " AND DAY(dateCreated) = DAY(CURDATE())";
-            $where_clauseB .= " AND DAY(dateCreated) = DAY(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
+            $where_clauseA .= " AND DAY(updateDate) = DAY(CURDATE())";
+            $where_clauseB .= " AND DAY(updateDate) = DAY(DATE_SUB(CURDATE(), INTERVAL 1 $filter))";
         }
 
 

@@ -120,8 +120,8 @@
                 $keyFormat = "date(now() - interval $dateBackward $sortBy)";
 
                 $sql .= "SELECT date_format($keyFormat , $format) as 'key', ifnull(sum(o.totalPrice), 0) as 'income'
-                         FROM orders o, orderstatus s
-                         WHERE o.orderID = s.orderID and s.statusID = 4 and   ";
+                         FROM orders o
+                         WHERE   ";
 
                 if ($sortBy == 'Day')
                     $sql .= "date(o.dateCreated) = date(now() - interval $dateBackward Day)";
@@ -161,10 +161,6 @@
 
             $searchVal = "%" . $searchVal . "%";
             $decryptedSearch = "%" .  $decryptedSearch . "%";
-
-            // echo($searchVal);
-            // echo("\n\n");
-            // echo($decryptedSearch);
 
             $sqlOrderList ="SELECT
                                 o.orderID as 'id',

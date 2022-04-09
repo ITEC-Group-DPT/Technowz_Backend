@@ -1,8 +1,8 @@
 <?php
 include '../api/apiheader.php';
-include '../classes/User.php';
+include '../classes/CustomerStatistic.php';
 
-$user = new User($conn);
+$user = new CustomerStatistic($conn);
 $header = getallheaders();
 if (isset($_GET['command']))
 {
