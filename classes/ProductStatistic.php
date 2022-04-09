@@ -45,7 +45,7 @@
 			$temp = "p." . $orderBy;
             $stmt = $this->conn->prepare("SELECT *
                                         from products p, productimage pimg
-                                        where p.type like ? and p.productID = pimg.productID and (p.name like ? or or p.productID like ?)
+                                        where p.type like ? and p.productID = pimg.productID and (p.name like ? or p.productID like ?)
                                         order by $temp $order
                                         limit ?, ?");
             $temp = 'p.' . $orderBy;
