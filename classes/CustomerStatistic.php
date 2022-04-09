@@ -24,13 +24,13 @@ class CustomerStatistic
             $defaultcol = $defaultcol - 1;
             $date = "DATE(now() - INTERVAL {$defaultcol} {$sortby})";
             if ($sortby == 'day')
-                $stmt = $this->conn->prepare("select DATE_FORMAT(DATE(now() - INTERVAL {$defaultcol} DAY), '%d/%m')  day, ifnull(count(uservisit.userID),0) guests FROM uservisit where uservisit.userID = -1 and date(uservisit.time) = DATE(now() - INTERVAL {$defaultcol} DAY);");
+                $stmt = $this->conn->prepare("select DATE_FORMAT(DATE(now() - INTERVAL {$defaultcol} DAY), '%d/%m')  day, ifnull(count(uservisit.userID),0) guests FROM uservisit where date(uservisit.time) = DATE(now() - INTERVAL {$defaultcol} DAY);");
             elseif ($sortby == 'month')
                 $stmt = $this->conn->prepare("select LEFT(monthname({$date}),3) month, ifnull(count(uservisit.userID),0) guests FROM uservisit
-                where uservisit.userID = -1 and {$sortby}(uservisit.time) = {$sortby}({$date}) and year(uservisit.time) = year({$date});");
+                where {$sortby}(uservisit.time) = {$sortby}({$date}) and year(uservisit.time) = year({$date});");
             elseif ($sortby == 'year')
                 $stmt = $this->conn->prepare("select year({$date}) year, ifnull(count(uservisit.userID),0) guests FROM uservisit
-                where uservisit.userID = -1 and  {$sortby}(uservisit.time) = {$sortby}({$date});");
+                where {$sortby}(uservisit.time) = {$sortby}({$date});");
             $stmt->execute();
             $result = $stmt->get_result();
             array_push($res, $result->fetch_all(MYSQLI_ASSOC)[0]);
