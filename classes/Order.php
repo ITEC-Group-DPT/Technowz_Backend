@@ -147,7 +147,7 @@ class Order
     public function getItemList($orderID, $userID)
     {
         $decryptedID = $this->decrypt($orderID);
-        
+
         $stmt = $this->conn->prepare("SELECT p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold, ordz.rating as 'customerRating'
                                             from orders o, orderdetails ordz, products p, productimage i
                                             where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID
@@ -177,10 +177,12 @@ class Order
 
     public function rateProduct($orderID, $productID, $rating)
     {
+        $decryptedID = $this->decrypt($orderID);
+
         $stmt = $this->conn->prepare("UPDATE orderdetails
                                         set rating = ?
                                         where orderID = ? and productID = ?");
-        $stmt->bind_param("dii", $rating, $orderID, $productID);
+        $stmt->bind_param("dii", $rating, $decryptedID, $productID);
         $stmt->execute();
         if ($stmt->affected_rows == 1) return true;
         else return false;
@@ -188,10 +190,12 @@ class Order
 
     public function commentProduct($orderID, $productID, $comment)
     {
+        $decryptedID = $this->decrypt($orderID);
+
         $stmt = $this->conn->prepare("UPDATE orderdetails
                                         set comment = ?
                                         where orderID = ? and productID = ?");
-        $stmt->bind_param("sii", $comment, $orderID, $productID);
+        $stmt->bind_param("sii", $comment, $decryptedID, $productID);
         $stmt->execute();
         if ($stmt->affected_rows == 1) return true;
         else return false;
