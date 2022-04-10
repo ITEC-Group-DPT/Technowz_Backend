@@ -80,19 +80,19 @@ class CustomerStatistic
         $str = ($limit != null) ? " LIMIT {$limit} " : "";
         if ($time == 'month')
         {
-            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, ifnull(sum(o.totalPrice),0) AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID
+            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, ifnull(sum(o.totalPrice),0) AS purchasedAmount FROM users u LEFT JOIN (orders inner Join orderstatus on orderstatus.orderID = orders.orderID and orderstatus.statusID = 4) o ON u.userID = o.userID
             and MONTH(o.dateCreated) = MONTH(NOW()) AND YEAR(o.dateCreated) = YEAR(NOW())
             GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC {$str}");
         }
         else if ($time == 'year')
         {
-            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username,  ifnull(sum(o.totalPrice),0)  AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID
+            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username,  ifnull(sum(o.totalPrice),0)  AS purchasedAmount FROM users u LEFT JOIN (orders inner Join orderstatus on orderstatus.orderID = orders.orderID and orderstatus.statusID = 4) o ON u.userID = o.userID
             and YEAR(o.dateCreated) = YEAR(NOW())
             GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC  {$str}");
         }
         else if ($time == 'day')
         {
-            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, ifnull(sum(o.totalPrice),0)  AS purchasedAmount FROM users u LEFT JOIN orders o ON u.userID = o.userID
+            $stmt = $this->conn->prepare("SELECT ROW_NUMBER() OVER (ORDER BY sum(o.totalPrice) DESC) AS rank, u.username, ifnull(sum(o.totalPrice),0)  AS purchasedAmount FROM users u LEFT JOIN (orders inner Join orderstatus on orderstatus.orderID = orders.orderID and orderstatus.statusID = 4) o ON u.userID = o.userID
             and DATE(o.dateCreated) = DATE(NOW())
             GROUP BY u.userID ORDER BY sum(o.totalPrice) DESC  {$str}");
         }
