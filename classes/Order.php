@@ -8,6 +8,43 @@ class Order
         $this->conn = $conn;
     }
 
+    private function substitution($char, $type) {
+        $plain = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+        $cipher = ['5', 'T', '7', 'I', 'Z', '9', 'M', 'A', 'E', '4'];
+
+        if($type == 'enc') {
+            $index = array_search($char, $plain);
+            return $cipher[$index];
+        }
+
+        if($type == 'dec') {
+            $index = array_search($char, $cipher);
+            return $plain[$index];
+        }
+    }
+
+    private function encrypt($orderID) {
+        $encryptedID = "";
+        $chars = str_split($orderID);
+
+        foreach ($chars as $char) {
+            $encryptedID .= $this->substitution($char, 'enc');
+        }
+
+        return $encryptedID;
+    }
+
+    private function decrypt($encryptedID) {
+        $orderID = "";
+        $chars = str_split($encryptedID);
+
+        foreach ($chars as $char) {
+            $orderID .= $this->substitution($char, 'dec');
+        }
+
+        return $orderID;
+    }
+
     public function createOrder($userID, $name, $address, $phone, $totalPrice, $productList, $date = null)
     {
         if ($date == null)
@@ -69,9 +106,9 @@ class Order
     public function getOrderList($userID, $offset = 0, $limit = 5)
     {
         $stmt = $this->conn->prepare("SELECT ord.orderID, p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold
-                                            FROM orders ord, orderdetails ordz,products p, productimage i 
-                                            WHERE ord.userID = ? and ord.orderID = ordz.orderID 
-                                                    and p.productID = i.productID and p.productID = ordz.productID 
+                                            FROM orders ord, orderdetails ordz,products p, productimage i
+                                            WHERE ord.userID = ? and ord.orderID = ordz.orderID
+                                                    and p.productID = i.productID and p.productID = ordz.productID
                                             ORDER BY ord.orderID desc ");
         $stmt->bind_param("i", $userID);
         $stmt->execute();
@@ -89,7 +126,9 @@ class Order
             {
                 break;
             }
-            $orderID = $item['orderID'];
+
+            $orderID = $this->encrypt($item['orderID']);
+
             $obj = [
                 "productID" => $item['productID'],
                 "name" => $item['name'],
@@ -107,11 +146,13 @@ class Order
 
     public function getItemList($orderID, $userID)
     {
+        $decryptedID = $this->decrypt($orderID);
+        
         $stmt = $this->conn->prepare("SELECT p.productID, p.name, i.img1, p.price, ordz.quantity, p.rating, p.sold, ordz.rating as 'customerRating'
                                             from orders o, orderdetails ordz, products p, productimage i
                                             where o.orderID = ? and o.userID = ? and ordz.orderID = o.orderID
                                                     and ordz.productID = p.productID and p.productID = i.productID");
-        $stmt->bind_param("ii", $orderID, $userID);
+        $stmt->bind_param("ii", $decryptedID, $userID);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows != 0)
@@ -121,10 +162,12 @@ class Order
 
     public function getOrderInfo($orderID, $userID)
     {
-        $stmt = $this->conn->prepare("SELECT *, TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff' 
-                                            from orders 
+        $decryptedID = $this->decrypt($orderID);
+
+        $stmt = $this->conn->prepare("SELECT *, TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff'
+                                            from orders
                                             where orderID = ? and userID = ?");
-        $stmt->bind_param("ii", $orderID, $userID);
+        $stmt->bind_param("ii", $decryptedID, $userID);
         $stmt->execute();
         $result = $stmt->get_result();
         if ($result->num_rows != 0)
@@ -135,7 +178,7 @@ class Order
     public function rateProduct($orderID, $productID, $rating)
     {
         $stmt = $this->conn->prepare("UPDATE orderdetails
-                                        set rating = ? 
+                                        set rating = ?
                                         where orderID = ? and productID = ?");
         $stmt->bind_param("dii", $rating, $orderID, $productID);
         $stmt->execute();
@@ -146,7 +189,7 @@ class Order
     public function commentProduct($orderID, $productID, $comment)
     {
         $stmt = $this->conn->prepare("UPDATE orderdetails
-                                        set comment = ? 
+                                        set comment = ?
                                         where orderID = ? and productID = ?");
         $stmt->bind_param("sii", $comment, $orderID, $productID);
         $stmt->execute();
