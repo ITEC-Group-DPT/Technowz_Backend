@@ -51,20 +51,22 @@ class Product
     public function createProduct($data)
     {
         $stmt1 = $this->conn->prepare("INSERT INTO products
-                                        (type, description, spec, name, price, rating, sold)
-                                        VALUES (?, ?, ?, ?, ?, ?, ?)");
+                                        (type, description, spec, name, price, rating, sold, stock)
+                                        VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
         $stmt1->bind_param(
-            "ssssidi",
+            "ssssidii",
             $data['type'],
             $data['description'],
             $data['spec'],
             $data['name'],
             $data['price'],
             $data['rating'],
-            $data['sold']
+            $data['sold'],
+            $data['stock'],
         );
         $stmt1->execute();
         $this->productID = $stmt1->insert_id;
+
 
         $stmt2 = $this->conn->prepare("INSERT INTO productimage
                                         (productID, img1, img2, img3, img4)
