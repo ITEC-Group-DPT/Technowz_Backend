@@ -17,8 +17,8 @@ if (isset($_GET['command']))
         $sortby = isset($_GET['sortby']) ? $_GET['sortby'] : 'month';
         if ($sortby == 'day')
         {
-            $currentInterval = "DATE(now() - INTERVAL 1 {$sortby})";
-            $previousInterval = "DATE(now() - INTERVAL 2 {$sortby})";
+            $currentInterval = "DATE(now())";
+            $previousInterval = "DATE(now() - INTERVAL 1 {$sortby})";
         }
         elseif ($sortby == 'month'){
             $firstdayofmonth = date('Y-m-01');
