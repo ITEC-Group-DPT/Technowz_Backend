@@ -55,6 +55,24 @@ if ($command == "ProductView") {
     successApi("Added product view data successfully");
 }
 
+if ($command == "StockRandom") {
+    
+    foreach ($productArray as $productID) {
+        $stock = rand(0, 20);
+
+        $sql = "UPDATE `products` 
+        SET stock = (?)
+        WHERE productID = (?)";
+
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("ii", $stock ,$productID);
+
+        $stmt->execute();
+    }
+
+    successApi("Added random stock successfully");
+}
+
 if ($command == "CreateOrder") {
 
     for ($j = 0; $j < 10; $j++) {
