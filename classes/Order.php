@@ -164,9 +164,30 @@ class Order
     {
         $decryptedID = $this->decrypt($orderID);
 
-        $stmt = $this->conn->prepare("SELECT *, TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff'
-                                            from orders
-                                            where orderID = ? and userID = ?");
+        $stmt = $this->conn->prepare("SELECT
+                                            o.name,
+                                            o.phone,
+                                            o.address,
+                                            o.totalPrice,
+                                            o.dateCreated,
+                                            TIMESTAMPDIFF(minute, dateCreated, NOW()) as 'dateDiff',
+                                            n.statusName as 'status'
+                                      FROM
+                                            orders o,
+                                            orderstatus s,
+                                            statusname n
+                                      WHERE
+                                            o.orderID = ? and
+                                            o.userID = ? and
+                                            o.orderID = s.orderID and
+                                            s.statusID = n.statusID and
+                                            s.updateDate = (SELECT MAX(s2.updateDate)
+                                                            FROM
+                                                                orders o2,
+                                                                orderstatus s2
+                                                            WHERE
+                                                                o2.orderID = s2.orderID and
+                                                                o.orderID = o2.orderID)");
         $stmt->bind_param("ii", $decryptedID, $userID);
         $stmt->execute();
         $result = $stmt->get_result();
