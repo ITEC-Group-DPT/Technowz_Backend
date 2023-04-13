@@ -11,8 +11,10 @@ if (isset($_GET['command'])) {
     if ($_GET['command'] == "checkToken") {
         $header = getallheaders();
 
-        if (isset($header['Userid'])) {
-            if ($user->getUser("userID", $header['Userid'])) {
+        if (isset($header['userid']))
+        {
+            if ($user->getUser("userID", $header['userid']))
+            {
                 successApi("validate user success");
                 return;
             }
@@ -46,7 +48,7 @@ if (isset($_GET['command'])) {
         $header = getallheaders();
         $stat = new CustomerStatistic($conn);
 
-        $userID = isset($header['Userid']) ? $header['Userid'] : -1;
+        $userID = isset($header['userid']) ? $header['userid'] : -1;
 
         $success = $stat->updateUserVisit($userID);
 

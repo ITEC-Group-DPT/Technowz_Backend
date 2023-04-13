@@ -6,8 +6,9 @@
     include '../classes/Product.php';
 
     $header = getallheaders();
-    if (isset($header['Userid'])){
-        $userID = $header['Userid'];
+if (isset($header['userid']))
+{
+    $userID = $header['userid'];
         $order = new Order($conn);
         if (isset($_POST['command'])){
             if ($_POST['command'] == 'createOrder'){

@@ -4,9 +4,9 @@ include '../classes/CustomerStatistic.php';
 include '../classes/SaleStatistic.php';
 
 $header = getallheaders();
-if (isset($header['Userid']))
+if (isset($header['userid']))
 {
-    $userID = $header['Userid'];
+    $userID = $header['userid'];
 }
 
 if (isset($_GET['command']))

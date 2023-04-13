@@ -7,8 +7,9 @@
     include '../classes/Favorite.php';
 
     $header = getallheaders();
-    if(isset($header['Userid'])){
-        $userID = $header['Userid'];
+if (isset($header['userid']))
+{
+    $userID = $header['userid'];
     }
 
     if(isset($_GET['command'])){

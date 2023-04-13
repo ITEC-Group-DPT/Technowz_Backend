@@ -7,13 +7,16 @@
             "http://localhost:8080",
             "http://localhost:3001",
             "https://technow-b54b6.web.app",
+        "https://technowz.phuhanh.com.vn",
+        "https://technowdashboard.phuhanh.com.vn"
         ];
 
         if (in_array($_SERVER["HTTP_ORIGIN"], $allowedOrigins)) {
             header("Access-Control-Allow-Origin: " . $_SERVER["HTTP_ORIGIN"]);
         }
         header("Access-Control-Allow-Methods: POST, GET, DELETE");
-        header("Access-Control-Allow-Headers: origin, content-type, accept, Userid");
+    header("Access-Control-Allow-Headers: origin, content-type, accept, userid, userid");
+
     }
 
     function errorAPI(){
@@ -37,5 +40,4 @@
         if (isset($data)) $response['data'] = $data;
         echo json_encode($response);
         exit;
-    }
-?>
+}

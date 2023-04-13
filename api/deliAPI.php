@@ -3,8 +3,9 @@
     include '../classes/DeliveryInfo.php';
 
     $header = getallheaders();
-    if(isset($header['Userid'])){
-        $userID = $header['Userid'];
+if (isset($header['userid']))
+{
+    $userID = $header['userid'];
         $deli = new DeliveryInfo($conn, $userID);
         if(isset($_POST['command'])){
             if ($_POST['command']== 'update'){

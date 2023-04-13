@@ -3,8 +3,9 @@ include './apiheader.php';
 include '../classes/Cart.php';
 
 $header = getallheaders();
-if (isset($header['Userid'])) {
-	$userID = $header['Userid'];
+if (isset($header['userid']))
+{
+    $userID = $header['userid'];
 	$cart = new Cart($conn, $userID);
 
 	if (isset($_POST['command'])) {

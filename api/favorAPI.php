@@ -3,8 +3,9 @@
 	include '../classes/Favorite.php';
 
 	$header = getallheaders();
-    if(isset($header['Userid'])){
-        $userID = $header['Userid'];
+if (isset($header['userid']))
+{
+    $userID = $header['userid'];
         $favorite = new Favorite($conn, $userID);
         if(isset($_POST['command'])){
             $productID = (isset($_POST['productID'])) ? $_POST['productID'] : '';
